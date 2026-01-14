@@ -20,8 +20,8 @@ Route::prefix('admin/')->middleware('auth:sanctum')->group(function () {
     Route::resource('category', CategoryController::class);
     Route::resource('brand', BrandController::class);
     Route::get('sizes', [SizeController::class,'index']);
-    Route::get('product', [ProductController::class,'index']);
-    // Route::resource('product', ProductController::class);
+    // Route::resource('product', [ProductController::class]);
+    Route::resource('product', ProductController::class);
 
 
     Route::post('save-temp-image', [TempImageController::class,'store']);

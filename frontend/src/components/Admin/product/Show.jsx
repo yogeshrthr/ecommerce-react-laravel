@@ -26,10 +26,9 @@ const show = () => {
 
         }).then(res => res.json())
             .then(result => {
-                console.log(result)
 
                 if (result.status == 200) {
-                    setProduct(result.product);
+                    setProduct(result.data);
                     //  toast.success(result.message)
                     console.log(result)
                 } else {
@@ -109,6 +108,7 @@ const show = () => {
                     </div>
                     <div className='col-md-9'>
                         {
+                           
                             (loader)
                                 ? <Loader title="Products"></Loader>
                                 :
@@ -122,7 +122,11 @@ const show = () => {
                                                     <thead>
                                                         <tr>
                                                             <th >Id</th>
-                                                            <th>Name</th>
+                                                            <th>Image</th>
+                                                            <th>Title</th>
+                                                            <th>Price</th>
+                                                            <th>Qty</th>
+                                                            <th>Sku</th>
                                                             <th width={200} >Status</th>
                                                             <th width={100}> Actions</th>
                                                         </tr>
@@ -135,9 +139,12 @@ const show = () => {
                                                                 return (
                                                                     <tr>
                                                                         <td>{product.id}</td>
-                                                                        <td>{product.name}</td>
+                                                                        <td> <img src={product.image_url} width={50} alt="" /> </td>
+                                                                        <td>{product.title}</td>
+                                                                        <td>{product.price}</td>
+                                                                        <td>{product.qty}</td>
+                                                                        <td>{product.sku}</td>
                                                                         <td>
-
                                                                             <span className={`badge text-bg-${product.status == 1 ? 'success' : 'danger'}`} > {product.status == 1 ? 'Active' : 'Inactive'}   </span>
                                                                         </td>
                                                                         <td>
@@ -168,8 +175,6 @@ const show = () => {
                                     )
                                     :
                                     <NoState title="Produts" />
-
-
                         }
 
                     </div>

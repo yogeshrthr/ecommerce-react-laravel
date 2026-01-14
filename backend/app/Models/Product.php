@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $table='tbl_products';
-    
 
+    protected $appends=['image_url'];   
+
+    public function getImageUrlAttribute(){
+        if($this->image==""){
+            return "";
+        }
+        return asset('/uploads/products/small/'.$this->image);
+    }
 }

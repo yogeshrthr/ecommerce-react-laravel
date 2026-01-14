@@ -15,7 +15,7 @@ class ProductController extends Controller
 {
     public function index(){
         $product=Product::orderBy('title','desc')->get()->toArray();
-        dd($product);
+        // dd($product);
         if(!$product){
             return response()->json(['status'=>404,'data'=>[],'message'=>'Not Found !']);
         }
