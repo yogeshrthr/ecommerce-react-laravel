@@ -14,7 +14,7 @@ use Intervention\Image\Drivers\Gd\Driver;
 class ProductController extends Controller
 {
     public function index(){
-        $product=Product::orderBy('title','desc')->get()->toArray();
+        $product=Product::orderBy('id','desc')->get()->toArray();
         // dd($product);
         if(!$product){
             return response()->json(['status'=>404,'data'=>[],'message'=>'Not Found !']);
@@ -30,7 +30,7 @@ class ProductController extends Controller
                 'status'=>'required|in:0,1',                
                 'price'=>'required|numeric',
                 'category_id'=>'required|integer',               
-                'size_id'=>'required|integer',
+                // 'size_id'=>'required|integer',
                 // 'image'=>'required',
                 'sku'=>'required|string|unique:tbl_products,sku',
 
@@ -47,16 +47,17 @@ class ProductController extends Controller
 
         $product=new Product();
         $product->title=$request->title;
-        $product->price=$request->price;
+        $product->price=(float)$request->price;
         $product->category_id=$request->category_id;
         $product->brand_id=$request->brand_id;
         $product->sku=$request->sku;
         $product->description=$request->description;
         $product->short_description=$request->short_description;
-        $product->compare_price=$request->compare_price;
-        $product->is_featured=$request->is_featured;
+        $product->compare_price=(float)$request->compare_price;
+        $product->is_featured=strtolower($request->isFeatured);
         $product->qty=$request->qty;
         $product->barcode=$request->barcode;
+        $product->status=$request->status;
         $product->save();
 
 
@@ -93,7 +94,7 @@ class ProductController extends Controller
             }
         }
        
-        return response()->json(['status'=>200,'message'=>"Product has Been Created Successfully! $indx uploaded"],200);
+        return response()->json(['status'=>200,'message'=>"Product has Been Created Successfully!". isset($indx)?'uploaded' :'' ],200);
         
 
     }

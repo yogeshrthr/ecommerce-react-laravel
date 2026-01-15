@@ -70,9 +70,7 @@ const show = () => {
                         .then(result => {
                             console.log(result)
                             if (result.status == 200) {
-                                fetchProduct(prevCategories =>
-                                    prevCategories.filter(product => product.id !== id)
-                                );
+                                fetchProducts();
                                 toast.success(result.message)
                             } else {
                                 toast.error(result.message)
