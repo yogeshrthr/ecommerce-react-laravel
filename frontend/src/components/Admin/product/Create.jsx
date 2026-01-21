@@ -16,9 +16,14 @@ import { toast } from 'react-toastify'
 
 const create = ({placeholder}) => {   
 
+    const galleryIdsRef = useRef([]);
+    const galleryImagesurls = useRef([]);
     const editor = useRef(null);
 	const [content, setContent] = useState('');
+	const [create_disable, setCreate_disable] = useState('');
     const navigate =useNavigate ();
+    const [gallery, setGallery] = useState('');
+    const [galleryImages, setGalleryImages] = useState('');
     const [category, setCategory] = useState([]);
     const [brand, setBrand] = useState([]);
 
@@ -36,37 +41,51 @@ const create = ({placeholder}) => {
         register,
         handleSubmit,
         watch,
+        trigger,
         formState: { errors },
         control, // <--- Add this here
     } = useForm();
     
-    const onSubmit =  async (data) => {
-      
+    const onSubmit =  async (data,e) => {
+        
+        setCreate_disable(true)
         console.log(data)
-
+        const formData=new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            if(key!='gallery')
+            formData.append(key, value);
+        });
+        formData.append('gallery',gallery)
+        console.log(formData,gallery);
         // return false
         const res= await fetch(`${apiUrl}/admin/product`,{
-            method:'POST',
+           method:'POST',
            headers: {
-                'Content-type': 'application/json',
+                // 'Content-type': 'application/json',
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${adminToken()}`
             },
-            body:JSON.stringify(data)
+            // body:JSON.stringify(data)
+            body:formData
 
         }).then(res=>res.json())
         .then(result=>{
+            setCreate_disable(false)
             // console.log(result)
             if(result.status==200){
                 toast.success(result.message)
-                // navigate('/admin/product')
+                navigate('/admin/product')
             }else{
-                // toast.error(result.message)
+                toast.error(result.message)
+                if (result.error) {
+                    Object.values(result.error).forEach(errors => {
+                        errors.forEach(msg => {
+                            toast.error(msg);
+                        });
+                    });
+                }
             }
         })
-
-
-
     }
 
     // new method to fetch categories
@@ -116,10 +135,53 @@ const create = ({placeholder}) => {
         fetchBrands();
         console.log(brand)
     },[]);
+    //on change fiel envent handle
+    const HandleFileEvent = async(e)=>{
+        const file = e.target.files[0];
+        if (!file) return;
+       
+        setCreate_disable(true)
+        const formdata = new FormData();
+        formdata.append('image',file)
+        
+
+        const res=await fetch(`${apiUrl}/admin/save-temp-image`,{
+            method:'POST',
+            headers:{
+                'Accept':'application/json',
+                'Authorization':`Bearer ${adminToken()}`
+            },
+            body:formdata
+        }).then(res=>res.json())
+        .then(result=>{
+            setCreate_disable(false)
+            galleryIdsRef.current.push(result.data.id)
+            setGallery([...galleryIdsRef.current])
+            console.log(result,galleryIdsRef)
+            galleryImagesurls.current.push(result.data.image_url)
+            setGalleryImages([...galleryImagesurls.current])
+        })
+
+    }
+
+    // remove temperaroy image 
+    const handleRemoveImage = (indexToRemove) => {
+        // For the UI preview array
+         // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
+        galleryImagesurls.current = galleryImagesurls.current.filter((_, index) => index !== indexToRemove); 
+        setGalleryImages(prev => prev.filter((_, index) => index !== indexToRemove));
+        
+        // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
+        galleryIdsRef.current = galleryIdsRef.current.filter((_, index) => index !== indexToRemove);      
+        
+        // And update the state you use for the final form submit
+        setGallery([...galleryIdsRef.current]);
+
+
+    };
 
     return (
         <Layout>
-
             <div className='container'>
                 <div className='row py-5'>
                     <div className='d-flex justify-content-between mt-5 pb-3'>
@@ -241,8 +303,7 @@ const create = ({placeholder}) => {
                                                     onBlur={(newContent) => onChange(newContent)} // Updates the form state
 
 
-                                                    // onBlur={newContent => setContent(newContent)} // preferred to use only this option to update the content for performance reasons
-			                                        // onChange={newContent => {}}
+                                                  
                                                     />
                                                 )}
                                             />
@@ -368,15 +429,16 @@ const create = ({placeholder}) => {
                                     </div>
                                     <div className='row mb-3'>
                                         <label  className='form-label' htmlFor="">File</label>
-                                            <input type="file" id="gallery" className='form-control'
+                                            <input  type="file" id="" className='form-control'
                                             
                                             { ...register("gallery",                                             
                                                 {
+                                                    // onChange: (e) => { HandleFileEvent(e) },
                                                     // required:"File  is Required.!",
                                                     validate: {
                                                         lessThan1MB: files =>{
                                                             if (!files || files.length === 0) return true;
-                                                            return files[0].size < 1000000 || 'Max size is 1MB';
+                                                            return files[0].size < 10000000 || 'Max size is 10MB';
                                                             // files[0]?.size < 1000000 || 'Max size is 1MB';
                                                         },
                                                             
@@ -386,7 +448,20 @@ const create = ({placeholder}) => {
                                                             'Only JPG, PNG, and GIF are allowed'
                                                         }
                                                            
-                                                    }                                                                           
+                                                    }  ,
+                                                    // 2. The Logic: Validate only this field on change
+                                                    onChange: async (e) => {
+                                                        // Trigger validation for ONLY this field
+                                                        const isFieldValid = await trigger("gallery");
+
+                                                        if (isFieldValid) {
+                                                            // Only runs if the file is < 1MB and correct format
+                                                            HandleFileEvent(e); 
+                                                        } else {
+                                                            // Validation failed: HandleFileEvent is NOT called
+                                                            console.log("File is invalid, stopping API call.");
+                                                        }
+                                                    }                                                                         
 
                                                 })
                                         }
@@ -426,14 +501,32 @@ const create = ({placeholder}) => {
                                                 </p>
                                             )}
                                         </div>
-                                    </div>
-                                  
-                                                                    
-
+                                    </div>  
+                                    <div className='mb-3 row'>
+                                        {  
+                                            galleryImages && galleryImages.map((item,index ) => (
+                                                
+                                                    <div className='col-md-2' key={index}>
+                                                        <div className='card-shadow content-align-center position-relative'>
+                                                            {/* The Close Button */}
+                                                                <button 
+                                                                    type="button" 
+                                                                    onClick={() => handleRemoveImage(index)} 
+                                                                    className="delete-btn"
+                                                                >
+                                                                    &times;
+                                                                </button>
+                                                            <img src={item} alt="" width={100} />
+                                                        </div>
+                                                    </div>
+                                                
+                                            ))
+                                            
+                                        }
+                                        
+                                    </div>      
                                     <div className='mb-3'>
-                                        
-                                        
-                                        <input className='btn btn-primary mt-3' type="submit" />
+                                        <input disabled={create_disable} className='btn btn-primary mt-3' type="submit" />
                                     </div>
                                 
                                 </div>
