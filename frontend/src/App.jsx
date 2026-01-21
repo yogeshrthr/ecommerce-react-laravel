@@ -19,7 +19,7 @@ import { default as EditBrand } from './components/Admin/brand/Edit';
 
 
 
-import { default as CreateProduct } from './components/Admin/product/Create';
+import { default as CreateProduct } from './components/Admin/product/Ceate';
 import { default as ShowProduct } from './components/Admin/product/Show';
 import { default as EditProduct } from './components/Admin/product/Edit';
 
