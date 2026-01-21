@@ -290,6 +290,47 @@ footer{
 
 
 
+//  product delte button 
+.position-relative {
+    position: relative; /* Ensures button stays inside this box */
+}
+
+.delete-btn {
+    position: absolute;
+    top: -12px;      /* Move it slightly above the edge */
+    right: -1px;    /* Move it slightly outside the right edge */
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 10;
+}
+
+.delete-btn:hover {
+    background: #cc0000;
+}
+// end product delte button 
+
+// show tabel 
+
+.index_table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #ffffff; /* Must set a solid color */
+    z-index: 2;                /* Keeps headers above the body text */
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Optional: adds a nice border shadow */
+}
+
+
 @media(min-width: 200px) and (max-width: 768px){
     .section1{
         .swiper{
