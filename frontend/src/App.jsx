@@ -13,13 +13,13 @@ import { default as CreateCategories } from './components/Admin/category/Create'
 import { default as ShowCategories } from './components/Admin/category/Show';
 import { default as EditCategories } from './components/Admin/category/Edit';
 
-import { default as CreateBrand } from './components/Admin/brand/create';
+import { default as CreateBrand } from './components/Admin/brand/Create';
 import { default as ShowBrand } from './components/Admin/brand/Show';
 import { default as EditBrand } from './components/Admin/brand/Edit';
 
 
 
-import { default as CreateProduct } from './components/Admin/product/create';
+import { default as CreateProduct } from './components/Admin/product/Create';
 import { default as ShowProduct } from './components/Admin/product/Show';
 import { default as EditProduct } from './components/Admin/product/Edit';
 
