@@ -103,7 +103,7 @@ class ProductController extends Controller
                     ProductImage::create(['product_id'=>$product->id,'image'=>$imgeName]);
                     if($indx==0){
                         $product->image=$imgeName;
-                        // $product->save();
+                        $product->save();
                     }
 
                 }
@@ -171,9 +171,9 @@ class ProductController extends Controller
     public function show(Request $request,$id){        
         $product = Product::find($id);    
         if($product)  
-            return response()->json(['status'=>200,'category'=>$category,'message'=>"Category Found!"],200);    
+            return response()->json(['status'=>200,'data'=>$product,'message'=>"Product Found!"],200);    
         else 
-            return response()->json(['status'=>404,'messsge'=>'Category Not found']);
+            return response()->json(['status'=>404,'messsge'=>'Product Not found']);
 
     }
     public function destroy(Request $request,$id){        

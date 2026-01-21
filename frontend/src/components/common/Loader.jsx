@@ -5,7 +5,7 @@ const Loader = ({title='data'}) => {
         <div className='d-flex justify-content-center  align-item-center py-5'  style={{ minHeight: '200px' }} >
             <div className='"d-flex align-items-center'>
                 <div className=''>
-                    <div class="loader"></div>
+                    <div className="loader"></div>
                 </div>
 
             </div>
