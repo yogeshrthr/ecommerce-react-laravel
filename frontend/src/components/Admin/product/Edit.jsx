@@ -13,7 +13,9 @@ import { Controller } from "react-hook-form";
 
 const edit = ({placeholder}) => {
     const galleryIdsRef = useRef([]);
+    const galleryOldIdsRef = useRef([]);
     const galleryImagesurls = useRef([]);
+    const galleryOldImagesurls = useRef([]);
     const editor = useRef(null);
 
     const productId = useParams().id;
@@ -21,7 +23,9 @@ const edit = ({placeholder}) => {
     const [disable, setDisable] = useState(false);
     const [loader, setLoader] = useState(false);
     const [gallery, setGallery] = useState('');
+    const [galleryOld, setOldGallery] = useState('');
     const [galleryImages, setGalleryImages] = useState('');
+    const [galleryOldImages, setGalleryOldImages] = useState('');
     const [category, setCategory] = useState([]);
     const [product, setProduct] = useState([]);
     const navigate = useNavigate();
@@ -41,8 +45,8 @@ const edit = ({placeholder}) => {
         [placeholder]
     );
 
+    // fetch product details
     useEffect(() => {
-
         const fetchProduct = async () => {
             setLoader(true);
             const res = await fetch(`${apiUrl}/admin/product/${productId}`, {
@@ -55,60 +59,107 @@ const edit = ({placeholder}) => {
 
             });
             const result = await res.json();
-
-            console.log(result)
             setLoader(false)
             if (result.status == 200) {
 
                 setProduct(result.data)
-                console.log(result.data)
                 reset({
                     title: result.data.title || '',
                     brand_id: result.data.brand_id || '',
                     category_id: result.data.category_id || '',
                     description: result.data.description || '',
-                    is_featured: result.data.is_featured || '',
+                    isFeatured: result.data.is_featured === 'yes' ? 'Yes' : 'No',
                     price: result.data.price || '',
                     qty: result.data.qty || '',
                     sku: result.data.sku || '',
                     status: result.data.status || '',
                     compare_price: result.data.compare_price || '',
+                    short_description: result.data.short_description || '',
+                    barcode: result.data.barcode || '',
                 })
+               
+                // const ids = result.data.product_images.map(item => item.id);
+                const images = result.data.product_images.map(item => item.image_path);
+                galleryOldImagesurls.current = images; 
+                setGalleryOldImages(images);
             } else {
                 toast.error(result.message)
             }
         }
         fetchProduct();
+        fetchCategories();
+        fetchBrands();
     }, [productId, reset]);
 
+    //on change fiel envent handle
+    const HandleFileEvent = async(e)=>{
+        const file = e.target.files[0];
+        if (!file) return;
+        setDisable(true)
+        const formdata = new FormData();
+        formdata.append('image',file)
+        
+
+        const res=await fetch(`${apiUrl}/admin/save-temp-image`,{
+            method:'POST',
+            headers:{
+                'Accept':'application/json',
+                'Authorization':`Bearer ${adminToken()}`
+            },
+            body:formdata
+        }).then(res=>res.json())
+        .then(result=>{
+            setDisable(false)
+            galleryIdsRef.current.push(result.data.id)
+            setGallery([...galleryIdsRef.current])
+            galleryImagesurls.current.push(result.data.image_url)
+            setGalleryImages([...galleryImagesurls.current])
+            
+        })
+
+    }
 
 
     const onSubmit = async (data) => {
         setDisable(true)
-        console.log(data)
-        const res = await fetch(`${apiUrl}/admin/product/${productId}`, {
-            method: 'PUT',
+         const formData=new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            if(key!='gallery' )
+            formData.append(key, value); 
+        }); 
+              
+        formData.append('galleryOld',galleryOld)
+        formData.append('gallery',gallery)
+        const res = await fetch(`${apiUrl}/admin/update-product/${productId}`, {
+            method: 'POST',
             headers: {
                 // 'Content-type': 'application/json',
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${adminToken()}`
             },
-            body: JSON.stringify(data)
+            body: formData
 
         }).then(res => res.json())
             .then(result => {
-
-                console.log(result)
                 if (result.status == 200) {
                     toast.success(result.message)
                     navigate('/admin/product')
                 } else {
                     setDisable(false)
                     toast.error(result.message)
+                    if (result.error) {
+                        Object.values(result.error).forEach(errors => {
+                            errors.forEach(msg => {
+                                toast.error(msg);
+                            });
+                        });
+                    }
                 }
             })
 
     }
+
+
 
     // new method to fetch categories
     const fetchCategories= async()=>{
@@ -121,7 +172,6 @@ const edit = ({placeholder}) => {
             },
         }).then(res=>res.json())
         .then(result=>{
-            // console.log(result)
             if(result.status==200){
                 setCategory(result.category);
                 // toast.success(result.message)
@@ -142,7 +192,6 @@ const edit = ({placeholder}) => {
             },
         }).then(res=>res.json())
         .then(result=>{
-            // console.log(result)
             if(result.status==200){
                 setBrand(result.brand);
                 // toast.success(result.message)
@@ -151,17 +200,36 @@ const edit = ({placeholder}) => {
             }
         })
     }
-    useEffect(()=>{
-        fetchCategories();
-        console.log(category)
-        fetchBrands();
-        console.log(brand)
-    },[]);
+    // remove temperaroy image 
+    const handleRemoveImage = (indexToRemove) => {
+        // For the UI preview array
+         // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
+        galleryImagesurls.current = galleryImagesurls.current.filter((_, index) => index !== indexToRemove); 
+        setGalleryImages(prev => prev.filter((_, index) => index !== indexToRemove));
+        
+        // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
+        galleryIdsRef.current = galleryIdsRef.current.filter((_, index) => index !== indexToRemove);      
+        
+        // And update the state you use for the final form submit
+        setGallery([...galleryIdsRef.current]);
+    };
+
+    // remove temperaroy image 
+    const removeOldImage = (idToRemove,indexToRemove) => {
+
+         // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
+        // galleryOldImagesurls.current = galleryImagesurls.current.filter((_, index) => index !== indexToRemove); 
+        // setGalleryImages(prev => prev.filter((_, index) => index !== indexToRemove));
+        
+        // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
+        galleryOldIdsRef.current.push(idToRemove)
+        setOldGallery([...galleryOldIdsRef.current])
+        
+        // And update the state you use for the final form submit
+        // setOldGallery([...galleryOldIdsRef.current]);
 
 
-
-
-
+    };
 
 
     return (
@@ -489,6 +557,27 @@ const edit = ({placeholder}) => {
                                             </div>
                                         </div>  
                                         <div className='mb-3 row'>
+                                            {  
+                                                galleryOldImages && galleryOldImages.map((item,index ) => (
+                                                    
+                                                        <div className='col-md-2' key={index}>
+                                                            <div className='card-shadow content-align-center position-relative'>
+                                                                {/* The Close Button */}
+                                                                    <button 
+                                                                        type="button" 
+                                                                        onClick={() => removeOldImage(item.id,index)} 
+                                                                        className="delete-btn"
+                                                                    >
+                                                                        &times;
+                                                                    </button>
+                                                                <img src={item} alt="" width={100} />
+                                                            </div>
+                                                        </div>
+                                                    
+                                                ))
+                                                
+                                            }
+                                            {/*  newly choosen or added image will appear here */}
                                             {  
                                                 galleryImages && galleryImages.map((item,index ) => (
                                                     
