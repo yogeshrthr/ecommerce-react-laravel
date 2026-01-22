@@ -22,6 +22,7 @@ Route::prefix('admin/')->middleware('auth:sanctum')->group(function () {
     Route::get('sizes', [SizeController::class,'index']);
     // Route::resource('product', [ProductController::class]);
     Route::resource('product', ProductController::class);
+    Route::post('update-product/{id}', [ProductController::class,'update']);
 
 
     Route::post('save-temp-image', [TempImageController::class,'store']);
