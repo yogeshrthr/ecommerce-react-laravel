@@ -13,7 +13,7 @@ import { Controller } from "react-hook-form";
 
 const edit = ({placeholder}) => {
     const galleryIdsRef = useRef([]);
-    const galleryOldIdsRef = useRef([]);
+    const galleryOldDeletedIdsRef = useRef([]);
     const galleryImagesurls = useRef([]);
     const galleryOldImagesurls = useRef([]);
     const editor = useRef(null);
@@ -23,11 +23,12 @@ const edit = ({placeholder}) => {
     const [disable, setDisable] = useState(false);
     const [loader, setLoader] = useState(false);
     const [gallery, setGallery] = useState('');
-    const [galleryOld, setOldGallery] = useState('');
+    const [galleryOldDeleted, setOldgalleryDeleted] = useState('');
     const [galleryImages, setGalleryImages] = useState('');
     const [galleryOldImages, setGalleryOldImages] = useState('');
     const [category, setCategory] = useState([]);
     const [product, setProduct] = useState([]);
+  
     const navigate = useNavigate();
     const {
         register,
@@ -75,13 +76,20 @@ const edit = ({placeholder}) => {
                     status: result.data.status || '',
                     compare_price: result.data.compare_price || '',
                     short_description: result.data.short_description || '',
-                    barcode: result.data.barcode || '',
+                    barcode: result.data.barcode || '',                   
+                    defaultImage: result.data.default_image ? result.data.default_image .toString() : ''                  
                 })
                
                 // const ids = result.data.product_images.map(item => item.id);
-                const images = result.data.product_images.map(item => item.image_path);
+                const images = result.data.product_images.map(item => ({
+                        path: item.image_path,
+                        id: item.id
+                    }));
+
                 galleryOldImagesurls.current = images; 
                 setGalleryOldImages(images);
+
+                // setOldgalleryDeleted(ids);
             } else {
                 toast.error(result.message)
             }
@@ -97,8 +105,7 @@ const edit = ({placeholder}) => {
         if (!file) return;
         setDisable(true)
         const formdata = new FormData();
-        formdata.append('image',file)
-        
+        formdata.append('image',file)        
 
         const res=await fetch(`${apiUrl}/admin/save-temp-image`,{
             method:'POST',
@@ -112,7 +119,12 @@ const edit = ({placeholder}) => {
             setDisable(false)
             galleryIdsRef.current.push(result.data.id)
             setGallery([...galleryIdsRef.current])
-            galleryImagesurls.current.push(result.data.image_url)
+            galleryImagesurls.current.push({
+                path: result.data.image_url,
+                id: result.data.id
+            });
+                        
+                // result.data.image_url)
             setGalleryImages([...galleryImagesurls.current])
             
         })
@@ -128,7 +140,7 @@ const edit = ({placeholder}) => {
             formData.append(key, value); 
         }); 
               
-        formData.append('galleryOld',galleryOld)
+        formData.append('galleryOldDeleted',galleryOldDeleted)
         formData.append('gallery',gallery)
         const res = await fetch(`${apiUrl}/admin/update-product/${productId}`, {
             method: 'POST',
@@ -202,14 +214,12 @@ const edit = ({placeholder}) => {
     }
     // remove temperaroy image 
     const handleRemoveImage = (indexToRemove) => {
-        // For the UI preview array
          // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
         galleryImagesurls.current = galleryImagesurls.current.filter((_, index) => index !== indexToRemove); 
         setGalleryImages(prev => prev.filter((_, index) => index !== indexToRemove));
         
         // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
-        galleryIdsRef.current = galleryIdsRef.current.filter((_, index) => index !== indexToRemove);      
-        
+        galleryIdsRef.current = galleryIdsRef.current.filter((_, index) => index !== indexToRemove);            
         // And update the state you use for the final form submit
         setGallery([...galleryIdsRef.current]);
     };
@@ -217,16 +227,13 @@ const edit = ({placeholder}) => {
     // remove temperaroy image 
     const removeOldImage = (idToRemove,indexToRemove) => {
 
-         // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
-        // galleryOldImagesurls.current = galleryImagesurls.current.filter((_, index) => index !== indexToRemove); 
-        // setGalleryImages(prev => prev.filter((_, index) => index !== indexToRemove));
+        // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server 
+        galleryOldImagesurls.current = galleryOldImagesurls.current.filter((_, index) => index !== indexToRemove);           
+        setGalleryOldImages(prev => prev.filter((_, index) => index !== indexToRemove));        
+        galleryOldDeletedIdsRef.current.push(idToRemove.id)
+        setOldgalleryDeleted([...galleryOldDeletedIdsRef.current])
         
-        // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
-        galleryOldIdsRef.current.push(idToRemove)
-        setOldGallery([...galleryOldIdsRef.current])
-        
-        // And update the state you use for the final form submit
-        // setOldGallery([...galleryOldIdsRef.current]);
+       
 
 
     };
@@ -238,14 +245,15 @@ const edit = ({placeholder}) => {
                 <div className='row py-5'>
                     <div className='d-flex justify-content-between mt-5 pb-3'>
                         <h4 className=' h4 pb-0 mb-0'> Brand / Edit</h4>
-                        <Link to="/admin/brand"> <button className='btn btn-primary'>Back</button></Link>
+                        <Link to="/admin/product"> <button className='btn btn-primary'>Back</button></Link>
                     </div>
                     <div className='col-md-3'>
                         <Sidebar />
                     </div>
                     <div className='col-md-9'>
+                        
                         {
-                            loader ? <Loader /> :
+                            loader ? <Loader /> : 
                             <form className='form' onSubmit={handleSubmit(onSubmit)}>
                                 <div className='card shadow' >
                                     <div className='card-body  p-4'>
@@ -561,23 +569,39 @@ const edit = ({placeholder}) => {
                                                 galleryOldImages && galleryOldImages.map((item,index ) => (
                                                     
                                                         <div className='col-md-2' key={index}>
-                                                            <div className='card-shadow content-align-center position-relative'>
-                                                                {/* The Close Button */}
+                                                            <div className='w-100-card-shadow content-align-center position-relative'> 
+                                                                
                                                                     <button 
                                                                         type="button" 
-                                                                        onClick={() => removeOldImage(item.id,index)} 
+                                                                        onClick={() => removeOldImage(item,index)} 
                                                                         className="delete-btn"
                                                                     >
                                                                         &times;
                                                                     </button>
-                                                                <img src={item} alt="" width={100} />
+                                                                <img src={item.path} alt="" width={100} />
                                                             </div>
-                                                        </div>
+                                                            <div className="mt-2">
+                                                                <label className="me-2">Set As Default</label>
+
+                                                                <input
+                                                                type="radio"
+                                                                value={item.id}   // or index
+                                                               
+                                                                {...register("defaultImage", {
+                                                                    required: "Please select a default image"
+                                                                })}
+                                                                className={`form-check-input ${
+                                                                    errors.defaultImage ? "is-invalid" : ""
+                                                                }`}
+                                                                />
+                                                            </div>
+                                                        </div>  
                                                     
                                                 ))
                                                 
                                             }
-                                            {/*  newly choosen or added image will appear here */}
+                                            
+                                            
                                             {  
                                                 galleryImages && galleryImages.map((item,index ) => (
                                                     
@@ -591,7 +615,21 @@ const edit = ({placeholder}) => {
                                                                     >
                                                                         &times;
                                                                     </button>
-                                                                <img src={item} alt="" width={100} />
+                                                                <img src={item.path} alt="" width={100} />
+                                                            </div>
+                                                            <div className="mt-2">
+                                                                <label className="me-2">Set As Default</label>
+
+                                                                <input
+                                                                    type="radio"
+                                                                    value={item.id}   // or index
+                                                                    {...register("defaultImage", {
+                                                                        required: "Please select a default image"
+                                                                    })}
+                                                                    className={`form-check-input ${
+                                                                        errors.defaultImage ? "is-invalid" : ""
+                                                                    }`}
+                                                                />
                                                             </div>
                                                         </div>
                                                     
@@ -599,9 +637,14 @@ const edit = ({placeholder}) => {
                                                 
                                             }
                                             
+                                            {errors.defaultImage && (
+                                                    <p className="text-danger" style={{ fontSize: '14px' }}>
+                                                        {errors.defaultImage.message}
+                                                    </p>
+                                                )}
                                         </div>      
                                         <div className='mb-3'>
-                                            <input disabled={loader} className='btn btn-primary mt-3' type="submit" />
+                                            <input disabled={disable} className='btn btn-primary mt-3' type="submit" />
                                         </div>
                                     
                                     </div>

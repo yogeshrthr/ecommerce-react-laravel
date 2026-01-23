@@ -80,7 +80,7 @@ class ProductController extends Controller
             if(!empty($request->gallery) &&  count(explode(',',$request->gallery))>0 ){
                 foreach(explode(',',$request->gallery) as $indx=>$itemId){
                     $tempImg=TempImage::find($itemId);
-
+  TempImage::where('image',$tempImg->name)->delte();
                     $ext=explode('.',$tempImg->name);
                     $ext=end($ext);
                     $imgeName=$product->id.'-'.Str::random(10).'-'.time().'.'.$ext;
@@ -88,9 +88,10 @@ class ProductController extends Controller
 
                     // large image
                     $manager = new ImageManager(Driver::class);
-                    $img = $manager->read(public_path('uploads/temp/'.$tempImg->name));
+                    $img = $manager->read(public_path('uploads/temp/thumb/'.$tempImg->name));
                     $img->scaleDown(1200);
                     $img->save(public_path('uploads/products/large/'.$imgeName));
+                    unlink('uploads/temp/thumb/'.$tempImg->name);
 
 
                     // samall image  
@@ -98,13 +99,19 @@ class ProductController extends Controller
                     $img = $manager->read(public_path('uploads/temp/'.$tempImg->name));
                     $img->coverDown(400,460);
                     $img->save(public_path('uploads/products/small/'.$imgeName));
+                   
+                  
 
                     ProductImage::create(['product_id'=>$product->id,'image'=>$imgeName]);
-                    if($indx==0){
-                        $product->image=$imgeName;
+                    
+
+                }
+                if($indx==0){
+                    $default_img=ProductImage::where(['product_id'=>$product->id])->find($request->defaultImage);
+                    if(isset($default_img->image) && !empty($default_img->image)){
+                        $product->image=$default_img->image;
                         $product->save();
                     }
-
                 }
             }            
             DB::commit();
@@ -128,7 +135,6 @@ class ProductController extends Controller
 
     }
     public function update(Request $request,$id){
-        // dd($request->all());
         try{
             $validate= Validator::make($request->all(),[
                 'title'=>'required|string',
@@ -162,7 +168,9 @@ class ProductController extends Controller
             if(!empty($request->gallery) &&  count(explode(',',$request->gallery))>0 ){
                 foreach(explode(',',$request->gallery) as $indx=>$itemId){
                     $tempImg=TempImage::find($itemId);
+$tempImg->delete(); // Triggers the event for every item
 
+ dd('dfd');
                     $ext=explode('.',$tempImg->name);
                     $ext=end($ext);
                     $imgeName=$product->id.'-'.Str::random(10).'-'.time().'.'.$ext;
@@ -170,9 +178,10 @@ class ProductController extends Controller
 
                     // large image
                     $manager = new ImageManager(Driver::class);
-                    $img = $manager->read(public_path('uploads/temp/'.$tempImg->name));
+                    $img = $manager->read(public_path('uploads/temp/thumb/'.$tempImg->name));
                     $img->scaleDown(1200);
                     $img->save(public_path('uploads/products/large/'.$imgeName));
+                    file_exists('uploads/temp/thumb/'.$tempImg->name)?unlink('uploads/temp/thumb/'.$tempImg->name):'';
 
 
                     // samall image  
@@ -180,17 +189,43 @@ class ProductController extends Controller
                     $img = $manager->read(public_path('uploads/temp/'.$tempImg->name));
                     $img->coverDown(400,460);
                     $img->save(public_path('uploads/products/small/'.$imgeName));
+                    file_exists('uploads/temp/'.$tempImg->name)?unlink('uploads/temp/'.$tempImg->name):'';
 
                     ProductImage::create(['product_id'=>$product->id,'image'=>$imgeName]);
-                    if($indx==0){
-                        $product->image=$imgeName;
-                        $product->save();
-                    }
+
+                    // if($indx==0){
+                    //     $product->image=$imgeName;
+                    //     $product->save();
+                    // }
 
                 }
             }
 
+           
 
+            // deleteing old images
+            if(isset($request->galleryOldDeleted) && !empty($request->galleryOldDeleted)){               
+                $deleted_ids=explode(',',$request->galleryOldDeleted);
+                foreach($deleted_ids as $item){                    
+                    $ProductImage=ProductImage::where('product_id',$product->id)->find($item);
+                    if(isset($ProductImage->image) && !empty($ProductImage->image) && file_exists(('uploads/products/small/'.$ProductImage->image))){
+                        unlink(('uploads/products/small/'.$ProductImage->image));
+                        unlink(('uploads/products/large/'.$ProductImage->image));                      
+                    }
+                    $ProductImage->delete();
+                }
+                if(!$ProductImage=ProductImage::where('product_id',$product->id)->count()){
+                    $product->image='';
+                    $product->save();
+                }
+               
+            }
+            // making defalut image here
+            $default_img=ProductImage::where(['product_id'=>$product->id])->find($request->defaultImage);
+            if(isset($default_img->image) && !empty($default_img->image)){
+                $product->image=$default_img->image;
+                $product->save();
+            }
 
             return response()->json(['status'=>200,'message'=>'Product has Been Updated Successfully!'],200);
             
@@ -213,7 +248,9 @@ class ProductController extends Controller
         if(!$product){
             return response()->json(['status'=>404,"data"=>[],'message'=>'Product Not found!']);
         }
+        // $product->product_images()->delete();
         $product->delete();
+
         return response()->json(['status'=>200,'message'=>'Product Deleted Successfully!']);  
     }
 }
