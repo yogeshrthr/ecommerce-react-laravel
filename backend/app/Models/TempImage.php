@@ -18,23 +18,4 @@ class TempImage extends Model
         }
         return asset('/uploads/temp/'.$this->name);
     }
-    protected static function boot(){
-        
-        parent::boot();
-        static::deleting(function ($tempImage) {
-            dd($tempImage);
-            // assuming column name is `image`
-            $imageName = $tempImage->image;
-            if (file_exists(('uploads/temp/' . $imageName))) {
-                unlink(('uploads/temp/' . $imageName));
-            }
-
-            if (file_exists(('uploads/temp/thumb/' . $imageName))) {
-                unlink(('uploads/temp/thumb/' . $imageName));
-            }
-
-
-        });
-        dd('delted');
-    }
 }

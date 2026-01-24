@@ -39,11 +39,8 @@ const edit = () => {
 
             });
             const result = await res.json();
-
-            console.log(result)
             setLoader(false)
             if (result.status == 200) {
-
                 setCategory(result.category)
                 reset({
                     name: result.category.name || '',
@@ -119,7 +116,7 @@ const edit = () => {
                                                             message: "Name can't be exceed 20 charecters."
                                                         },
                                                         pattern: {
-                                                            value: /^[A-Za-z 0-9 -]+$/i,
+                                                            value: /^[A-Za-z 0-9 _'-]+$/i,
                                                             message: "Name can be AlphaNumeric only."
                                                         }
 

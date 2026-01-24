@@ -119,7 +119,7 @@ const edit = () => {
                                                             message: "Name can't be exceed 20 charecters."
                                                         },
                                                         pattern: {
-                                                            value: /^[A-Za-z 0-9 -]+$/i,
+                                                            value: /^[A-Za-z 0-9 _'-]+$/i,
                                                             message: "Name can be AlphaNumeric only."
                                                         }
 

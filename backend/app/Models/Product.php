@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductImage;
+use App\Models\ProductSize;
 
 class Product extends Model
 {
@@ -39,6 +40,9 @@ class Product extends Model
         return $this->product_images()
             ->where('image', $this->image)
             ->first()?->id;
+    }
+    public function product_size(){
+        return $this->hasMany(ProductSize::class);
     }
    
 }

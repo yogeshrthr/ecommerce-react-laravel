@@ -12,6 +12,7 @@ import { Controller } from "react-hook-form";
 
 
 const edit = ({placeholder}) => {
+ 
     const galleryIdsRef = useRef([]);
     const galleryOldDeletedIdsRef = useRef([]);
     const galleryImagesurls = useRef([]);
@@ -27,6 +28,8 @@ const edit = ({placeholder}) => {
     const [galleryImages, setGalleryImages] = useState('');
     const [galleryOldImages, setGalleryOldImages] = useState('');
     const [category, setCategory] = useState([]);
+    const [sizes, setSizes] = useState([]);
+    const [sizesChecked, setSizesChecked] = useState([]);
     const [product, setProduct] = useState([]);
   
     const navigate = useNavigate();
@@ -36,16 +39,21 @@ const edit = ({placeholder}) => {
         watch,
         reset,
         trigger,
+        setValue,
+        getValues,
         control, // <--- Add this here
         formState: { errors }
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            defaultImage: ""
+        }
+    });
     const config = useMemo(() => ({
             readonly: false, // all options from https://xdsoft.net/jodit/docs/,
             placeholder: placeholder || 'Start typings...'
         }),
         [placeholder]
     );
-
     // fetch product details
     useEffect(() => {
         const fetchProduct = async () => {
@@ -88,8 +96,12 @@ const edit = ({placeholder}) => {
 
                 galleryOldImagesurls.current = images; 
                 setGalleryOldImages(images);
-
-                // setOldgalleryDeleted(ids);
+                const sizes=result.data.product_size.map(item => 
+                       item.size_id
+                    );
+                // set sizes
+                setSizesChecked(sizes);
+                console.log(sizes)
             } else {
                 toast.error(result.message)
             }
@@ -97,6 +109,7 @@ const edit = ({placeholder}) => {
         fetchProduct();
         fetchCategories();
         fetchBrands();
+        fetchSizes();
     }, [productId, reset]);
 
     //on change fiel envent handle
@@ -121,9 +134,8 @@ const edit = ({placeholder}) => {
             setGallery([...galleryIdsRef.current])
             galleryImagesurls.current.push({
                 path: result.data.image_url,
-                id: result.data.id
-            });
-                        
+                id: result.data.name
+            });                        
                 // result.data.image_url)
             setGalleryImages([...galleryImagesurls.current])
             
@@ -193,6 +205,27 @@ const edit = ({placeholder}) => {
         })
 
     }
+    // new method to fetch Sizes
+    const fetchSizes= async()=>{
+        const res= await fetch(`${apiUrl}/admin/sizes`,{
+            method:'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${adminToken()}`
+            },
+        }).then(res=>res.json())
+        .then(result=>{
+            if(result.status==200){
+                setSizes(result.data);
+              
+                // toast.success(result.message)
+            }else{
+                // toast.error(result.message)
+            }
+        })
+
+    }
     // new method to fetch categories
     const fetchBrands= async()=>{
         const res= await fetch(`${apiUrl}/admin/brand`,{
@@ -214,6 +247,7 @@ const edit = ({placeholder}) => {
     }
     // remove temperaroy image 
     const handleRemoveImage = (indexToRemove) => {
+
          // IMPORTANT: Also remove the ID from your galleryIdsRef so it's not sent to the server
         galleryImagesurls.current = galleryImagesurls.current.filter((_, index) => index !== indexToRemove); 
         setGalleryImages(prev => prev.filter((_, index) => index !== indexToRemove));
@@ -222,6 +256,8 @@ const edit = ({placeholder}) => {
         galleryIdsRef.current = galleryIdsRef.current.filter((_, index) => index !== indexToRemove);            
         // And update the state you use for the final form submit
         setGallery([...galleryIdsRef.current]);
+
+     
     };
 
     // remove temperaroy image 
@@ -232,6 +268,7 @@ const edit = ({placeholder}) => {
         setGalleryOldImages(prev => prev.filter((_, index) => index !== indexToRemove));        
         galleryOldDeletedIdsRef.current.push(idToRemove.id)
         setOldgalleryDeleted([...galleryOldDeletedIdsRef.current])
+         
         
        
 
@@ -489,6 +526,45 @@ const edit = ({placeholder}) => {
                                             </div>  
                                                                                     
                                         </div>
+                                        <div className="mb-3">
+                                            <label htmlFor="">Size</label>
+                                            <div className="d-flex align-items-center flex-wrap gap-3">
+                                                {sizes && sizes.map((item) => (
+                                                <div className="form-check form-check-inline" key={item.id}>
+                                                    <input
+                                                    {...register('size',
+                                                        {
+                                                            required:"Porduct size is required"
+                                                        }
+
+                                                    )}
+                                                    className="form-check-input"
+                                                    type="checkbox"
+                                                    value={item.id}
+                                                    id={`size-${item.id}`}
+                                                    checked={sizesChecked.includes(item.id)}
+                                                    onChange={(e)=>{
+                                                        if(e.target.checked){
+                                                            setSizesChecked([...sizesChecked,item.id])
+                                                        }else{
+                                                            setSizesChecked(sizesChecked.filter(sid=> item.id!=sid))
+                                                        }
+                                                    }
+                                                        
+                                                    }
+                                                    />
+                                                    <label
+                                                    className="form-check-label"
+                                                    htmlFor={`size-${item.id}`}
+                                                    >
+                                                    {item.name}
+                                                    </label>
+                                                </div>
+                                                ))}
+                                            </div>
+                                             {errors.size && (<p style={{ color: 'red' }}>**{errors.size.message}**</p>     )}
+                                        </div>
+
                                         <div className='row mb-3'>
                                             <label  className='form-label' htmlFor="">File</label>
                                                 <input  type="file" id="" className='form-control'

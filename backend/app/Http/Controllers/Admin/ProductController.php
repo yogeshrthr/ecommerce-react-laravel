@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\TempImage;
 use App\Models\ProductImage;
+use App\Models\ProductSize;
+use App\Models\Size;
 use Validator , Str;
 use Illuminate\Support\Facades\DB;
 
@@ -80,7 +82,7 @@ class ProductController extends Controller
             if(!empty($request->gallery) &&  count(explode(',',$request->gallery))>0 ){
                 foreach(explode(',',$request->gallery) as $indx=>$itemId){
                     $tempImg=TempImage::find($itemId);
-  TempImage::where('image',$tempImg->name)->delte();
+
                     $ext=explode('.',$tempImg->name);
                     $ext=end($ext);
                     $imgeName=$product->id.'-'.Str::random(10).'-'.time().'.'.$ext;
@@ -98,12 +100,11 @@ class ProductController extends Controller
                     $manager = new ImageManager(Driver::class);
                     $img = $manager->read(public_path('uploads/temp/'.$tempImg->name));
                     $img->coverDown(400,460);
-                    $img->save(public_path('uploads/products/small/'.$imgeName));
-                   
-                  
+                    $img->save(public_path('uploads/products/small/'.$imgeName)); 
 
                     ProductImage::create(['product_id'=>$product->id,'image'=>$imgeName]);
-                    
+
+                    $tempImg->delete();
 
                 }
                 if($indx==0){
@@ -164,13 +165,12 @@ class ProductController extends Controller
             $product->is_featured=strtolower($request->isFeatured);
             $product->qty=$request->qty;
             $product->barcode=$request->barcode;
+            $product->status=$request->status??0;
             $product->save();
             if(!empty($request->gallery) &&  count(explode(',',$request->gallery))>0 ){
                 foreach(explode(',',$request->gallery) as $indx=>$itemId){
                     $tempImg=TempImage::find($itemId);
-$tempImg->delete(); // Triggers the event for every item
 
- dd('dfd');
                     $ext=explode('.',$tempImg->name);
                     $ext=end($ext);
                     $imgeName=$product->id.'-'.Str::random(10).'-'.time().'.'.$ext;
@@ -193,15 +193,33 @@ $tempImg->delete(); // Triggers the event for every item
 
                     ProductImage::create(['product_id'=>$product->id,'image'=>$imgeName]);
 
+                  
+                    if(!is_numeric($request->defaultImage) && $request->defaultImage==$tempImg->name){
+                        $product->image=$imgeName;
+                        $product->save();
+                    }
                     // if($indx==0){
                     //     $product->image=$imgeName;
                     //     $product->save();
                     // }
-
+                     
+                    $tempImg->delete();
                 }
+                
             }
 
-           
+           if(isset($request->size) && count(explode(',',$request->size))){
+            $size=explode(',',$request->size);
+            $temp=[];
+            ProductSize::where('product_id',$product->id)->delete();
+            foreach($size as $item){
+                array_push($temp,[
+                    'size_id' => $item,
+                    'product_id' => $product->id
+                ]);
+            }
+            ProductSize::insert($temp);                
+           }
 
             // deleteing old images
             if(isset($request->galleryOldDeleted) && !empty($request->galleryOldDeleted)){               
@@ -221,11 +239,14 @@ $tempImg->delete(); // Triggers the event for every item
                
             }
             // making defalut image here
-            $default_img=ProductImage::where(['product_id'=>$product->id])->find($request->defaultImage);
-            if(isset($default_img->image) && !empty($default_img->image)){
-                $product->image=$default_img->image;
-                $product->save();
+            if(is_numeric($request->defaultImage)){
+                $default_img=ProductImage::where(['product_id'=>$product->id])->find($request->defaultImage);
+                if(isset($default_img->image) && !empty($default_img->image)){
+                    $product->image=$default_img->image;
+                    $product->save();
+                }
             }
+            
 
             return response()->json(['status'=>200,'message'=>'Product has Been Updated Successfully!'],200);
             
@@ -235,10 +256,10 @@ $tempImg->delete(); // Triggers the event for every item
     }
 
     public function show(Request $request,$id){        
-        $product = Product::with('product_images')->find($id);  
-        // dd($product->toArray());
+        $product = Product::with(['product_images','product_size'])->find($id);
+        $size=Size::get();
         if($product)  
-            return response()->json(['status'=>200,'data'=>$product,'message'=>"Product Found!"],200);    
+            return response()->json(['status'=>200,'data'=>$product,'message'=>"Product Found!",'size'=>$size],200);    
         else 
             return response()->json(['status'=>404,'messsge'=>'Product Not found']);
 
