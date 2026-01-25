@@ -17,6 +17,7 @@ Route::get('get-featured-products', [FrontProductController::class,'fetchFeature
 Route::get('get-category', [FrontProductController::class,'getCategory']);
 Route::get('get-brand', [FrontProductController::class,'getBrand']);
 Route::get('get-products', [FrontProductController::class,'getProducts']);
+Route::get('get-product-details/{id}', [FrontProductController::class,'getProductDetails']);
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();

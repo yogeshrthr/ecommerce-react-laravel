@@ -26,7 +26,7 @@ const create = ({placeholder}) => {
     const [galleryImages, setGalleryImages] = useState('');
     const [category, setCategory] = useState([]);
     const [brand, setBrand] = useState([]);
-
+    const [sizes, setSizes] = useState([]);
 	const config = useMemo(() => ({
 			readonly: false, // all options from https://xdsoft.net/jodit/docs/,
 			placeholder: placeholder || 'Start typings...'
@@ -129,11 +129,30 @@ const create = ({placeholder}) => {
             }
         })
     }
+    const fetchSizes= async()=>{
+            const res= await fetch(`${apiUrl}/admin/sizes`,{
+                method:'GET',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${adminToken()}`
+                },
+            }).then(res=>res.json())
+            .then(result=>{
+                if(result.status==200){
+                    setSizes(result.data);
+                  
+                    // toast.success(result.message)
+                }else{
+                    // toast.error(result.message)
+                }
+            })
+    
+        }
     useEffect(()=>{
         fetchCategories();
-        console.log(category)
         fetchBrands();
-        console.log(brand)
+        fetchSizes();
     },[]);
     //on change fiel envent handle
     const HandleFileEvent = async(e)=>{
@@ -158,8 +177,11 @@ const create = ({placeholder}) => {
             galleryIdsRef.current.push(result.data.id)
             setGallery([...galleryIdsRef.current])
             console.log(result,galleryIdsRef)
-            galleryImagesurls.current.push(result.data.image_url)
-            setGalleryImages([...galleryImagesurls.current])
+           galleryImagesurls.current.push({
+                path: result.data.image_url,
+                id: result.data.name
+            }); 
+           setGalleryImages([...galleryImagesurls.current])
         })
 
     }
@@ -427,6 +449,43 @@ const create = ({placeholder}) => {
                                         </div>  
                                                                                 
                                     </div>
+                                     <div className="mb-3">
+                                            <label htmlFor="">Size</label>
+                                            <div className="d-flex align-items-center flex-wrap gap-3">
+                                                {sizes && sizes.map((item) => (
+                                                    <div className="form-check form-check-inline" key={item.id}>
+                                                        <input
+                                                        {...register('size',
+                                                            {
+                                                                required:"Porduct size is required"
+                                                            }
+
+                                                        )}
+                                                        className="form-check-input"
+                                                        type="checkbox"
+                                                        value={item.id}
+                                                        id={`size-${item.id}`}                                                   
+                                                        onChange={(e)=>{
+                                                            if(e.target.checked){
+                                                                setSizesChecked([...sizesChecked,item.id])
+                                                            }else{
+                                                                setSizesChecked(sizesChecked.filter(sid=> item.id!=sid))
+                                                            }
+                                                        }
+                                                            
+                                                        }
+                                                        />
+                                                        <label
+                                                        className="form-check-label"
+                                                        htmlFor={`size-${item.id}`}
+                                                        >
+                                                        {item.name}
+                                                        </label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                             {errors.size && (<p style={{ color: 'red' }}>**{errors.size.message}**</p>     )}
+                                        </div>
                                     <div className='row mb-3'>
                                         <label  className='form-label' htmlFor="">File</label>
                                             <input  type="file" id="" className='form-control'
@@ -504,25 +563,45 @@ const create = ({placeholder}) => {
                                     </div>  
                                     <div className='mb-3 row'>
                                         {  
-                                            galleryImages && galleryImages.map((item,index ) => (
-                                                
-                                                    <div className='col-md-2' key={index}>
-                                                        <div className='card-shadow content-align-center position-relative'>
-                                                            {/* The Close Button */}
-                                                                <button 
-                                                                    type="button" 
-                                                                    onClick={() => handleRemoveImage(index)} 
-                                                                    className="delete-btn"
-                                                                >
-                                                                    &times;
-                                                                </button>
-                                                            <img src={item} alt="" width={100} />
+                                                galleryImages && galleryImages.map((item,index ) => (
+                                                    
+                                                        <div className='col-md-2' key={index}>
+                                                            <div className='card-shadow content-align-center position-relative'>
+                                                                {/* The Close Button */}
+                                                                    <button 
+                                                                        type="button" 
+                                                                        onClick={() => handleRemoveImage(index)} 
+                                                                        className="delete-btn"
+                                                                    >
+                                                                        &times;
+                                                                    </button>
+                                                                <img src={item.path} alt="" width={100} />
+                                                            </div>
+                                                            <div className="mt-2">
+                                                                <label className="me-2">Set As Default</label>
+
+                                                                <input
+                                                                    type="radio"
+                                                                    value={item.id}   // or index
+                                                                    {...register("defaultImage", {
+                                                                        required: "Please select a default image"
+                                                                    })}
+                                                                    className={`form-check-input ${
+                                                                        errors.defaultImage ? "is-invalid" : ""
+                                                                    }`}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    
+                                                ))
                                                 
-                                            ))
+                                            }
                                             
-                                        }
+                                            {errors.defaultImage && (
+                                                    <p className="text-danger" style={{ fontSize: '14px' }}>
+                                                        {errors.defaultImage.message}
+                                                    </p>
+                                                )}
                                         
                                     </div>      
                                     <div className='mb-3'>

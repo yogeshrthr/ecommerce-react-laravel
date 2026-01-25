@@ -13,8 +13,7 @@ import Layout from './common/Layout';
 const Home = () => {
   return (
     <>
-    <Layout>
-      
+      <Layout>      
       <Hero />
       <LatestProduct />
       <FeaturedProducts /> 

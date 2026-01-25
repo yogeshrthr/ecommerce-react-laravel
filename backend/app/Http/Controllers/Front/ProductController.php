@@ -42,7 +42,7 @@ class ProductController extends Controller
     //get shop product (search product based on category or brand)
     public function getProducts(Request $request){
         // dd($request->all());
-        $per_page=$request->page??10;
+       
         $query = Product::where('status', 1);
         $categoryIds=array_filter(explode(',',$request->category));
         $brandIds=array_filter(explode(',',$request->brand));
@@ -63,7 +63,7 @@ class ProductController extends Controller
             $query->whereIn('brand_id', $brandIds);
         }
 
-        $products = $query->paginate($per_page);
+        $products = $query->paginate(9);
         // dd($products->toArray());
         if($products){
             return response()->json(['status'=>200,'data'=>$products,'message'=>'product Found!']);
@@ -71,8 +71,15 @@ class ProductController extends Controller
             return response()->json(['status'=>500,'data'=>[],'message'=>'product not Found!']);
         }
        
-        
-        // dd($products->toArray());
+    }
+
+    public function getProductDetails(Request $request){
+        $product=Product::with('product_images','product_size.size')->where(['status'=>1])->find($request->id);
+        if($product){            
+            return response()->json(['status'=>200,'message'=>"product found!",'data'=>$product]);
+        }else{
+             return response()->json(['status'=>500,'message'=>"product Not found!",'data'=>[]]);
+        }
     }
 
    

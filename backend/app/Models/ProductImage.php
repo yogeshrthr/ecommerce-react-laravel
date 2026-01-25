@@ -15,13 +15,19 @@ class ProductImage extends Model
         'created_at',
         'updated_at'
     ];
-    protected $appends=['image_path'];   
+    protected $appends=['image_path','image_path_large'];   
 
     public function getImagePathAttribute(){
         if($this->image==""){
             return "";
         }
         return asset('/uploads/products/small/'.$this->image);
+    }
+    public function getImagePathlargeAttribute(){
+        if($this->image==""){
+            return "";
+        }
+        return asset('/uploads/products/large/'.$this->image);
     }
    
 }

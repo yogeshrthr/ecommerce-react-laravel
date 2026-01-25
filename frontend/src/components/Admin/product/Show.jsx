@@ -36,7 +36,7 @@ const show = () => {
                     //  toast.success(result.message)
                     console.log(result.data.data)
                     setProduct(result.data.data); // The actual list
-        setPagination(result.data);    // The metadata (total, last_page, etc.)
+                    setPagination(result.data);    // The metadata (total, last_page, etc.)
                 } else {
                     toast.error(result.message)
                 }
@@ -274,7 +274,7 @@ const show = () => {
                                 </ul>
                             </nav>
                         </div>
-                          {/* End paginate  */}
+                        {/* End paginate  */}
 
                     </div>
                 </div>

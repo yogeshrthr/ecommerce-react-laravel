@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Logo from '../../assets/images/logo.png';
 import { Link } from 'react-router-dom';
-const Header = () => {
+import { apiUrl } from './http';
+const Header = ({ category }) => {  
+   
     return (
         <>
             <header className="shadow">
@@ -24,10 +26,16 @@ const Header = () => {
                             <Nav
                                 className="ms-auto my-2 my-lg-0"
                                 navbarScroll
-                            >
-                                <Nav.Link href="#action1">Men</Nav.Link>
+
+                            > 
+                            {
+                                category && category.map((item)=>(
+                                    <Nav.Link href={`/shop?category=${item.id}`}>{item.name}</Nav.Link>
+                                ))
+                            }
+                                {/* <Nav.Link href="#action1">Men</Nav.Link>
                                 <Nav.Link href="#action2">Women</Nav.Link>
-                                <Nav.Link href="#action2">Kids</Nav.Link>
+                                <Nav.Link href="#action2">Kids</Nav.Link> */}
                             </Nav>
                             <div className='nav-right d-flex'>
                                 <a href="" className='ms-3'>

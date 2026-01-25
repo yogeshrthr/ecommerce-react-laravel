@@ -22,6 +22,7 @@ import { default as CreateProduct } from "./components/Admin/product/Create";
 import { default as ShowProduct } from './components/Admin/product/Show';
 import { default as EditProduct } from './components/Admin/product/Edit';
 
+import Layout from './components/common/Layout';
 
 
 import Swal from 'sweetalert2/dist/sweetalert2.js'
@@ -35,8 +36,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/product" element={<Product />} />
+          <Route path="/shop" element={<Layout>
+      <Shop />
+    </Layout>} />
+          <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
           <Route path="/admin/login" element={<AdminLogin />} />

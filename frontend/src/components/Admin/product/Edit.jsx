@@ -564,48 +564,6 @@ const edit = ({placeholder}) => {
                                             </div>
                                              {errors.size && (<p style={{ color: 'red' }}>**{errors.size.message}**</p>     )}
                                         </div>
-
-                                        <div className='row mb-3'>
-                                            <label  className='form-label' htmlFor="">File</label>
-                                                <input  type="file" id="" className='form-control'
-                                                
-                                                { ...register("gallery",                                             
-                                                    {
-                                                        // onChange: (e) => { HandleFileEvent(e) },
-                                                        // required:"File  is Required.!",
-                                                        validate: {
-                                                            lessThan1MB: files =>{
-                                                                if (!files || files.length === 0) return true;
-                                                                return files[0].size < 10000000 || 'Max size is 10MB';
-                                                                // files[0]?.size < 1000000 || 'Max size is 1MB';
-                                                            },
-                                                                
-                                                            acceptedFormats: files => {
-                                                                if (!files || files.length === 0) return true;
-                                                                return ['image/jpeg', 'image/png', 'image/gif'].includes(files[0]?.type) || 
-                                                                'Only JPG, PNG, and GIF are allowed'
-                                                            }
-                                                            
-                                                        }  ,
-                                                        // 2. The Logic: Validate only this field on change
-                                                        onChange: async (e) => {
-                                                            // Trigger validation for ONLY this field
-                                                            const isFieldValid = await trigger("gallery");
-
-                                                            if (isFieldValid) {
-                                                                // Only runs if the file is < 1MB and correct format
-                                                                HandleFileEvent(e); 
-                                                            } else {
-                                                                // Validation failed: HandleFileEvent is NOT called
-                                                                console.log("File is invalid, stopping API call.");
-                                                            }
-                                                        }                                                                         
-
-                                                    })
-                                            }
-                                                />
-                                            {errors.gallery && (<p style={{ color: 'red' }}>**{errors.gallery.message}**</p>     )}
-                                        </div> 
                                         <div className='row'>
                                             <div className='mb-3'>
                                                 <label className='form-label d-block'>Is Featured?</label>
@@ -640,6 +598,48 @@ const edit = ({placeholder}) => {
                                                 )}
                                             </div>
                                         </div>  
+                                        <div className='row mb-3'>
+                                            <label  className='form-label' htmlFor="">File</label>
+                                                <input  type="file" id="" className='form-control'
+                                                
+                                                { ...register("gallery",                                             
+                                                    {
+                                                        // onChange: (e) => { HandleFileEvent(e) },
+                                                        // required:"File  is Required.!",
+                                                        validate: {
+                                                            lessThan1MB: files =>{
+                                                                if (!files || files.length === 0) return true;
+                                                                return files[0].size < 10000000 || 'Max size is 10MB';
+                                                                // files[0]?.size < 1000000 || 'Max size is 1MB';
+                                                            },
+                                                                
+                                                            acceptedFormats: files => {
+                                                                if (!files || files.length === 0) return true;
+                                                                return ['image/jpeg', 'image/png', 'image/jpg'].includes(files[0]?.type) || 
+                                                                'Only JPG, PNG, and GIF are allowed'
+                                                            }
+                                                            
+                                                        }  ,
+                                                        // 2. The Logic: Validate only this field on change
+                                                        onChange: async (e) => {
+                                                            // Trigger validation for ONLY this field
+                                                            const isFieldValid = await trigger("gallery");
+
+                                                            if (isFieldValid) {
+                                                                // Only runs if the file is < 1MB and correct format
+                                                                HandleFileEvent(e); 
+                                                            } else {
+                                                                // Validation failed: HandleFileEvent is NOT called
+                                                                console.log("File is invalid, stopping API call.");
+                                                            }
+                                                        }                                                                         
+
+                                                    })
+                                            }
+                                                />
+                                            {errors.gallery && (<p style={{ color: 'red' }}>**{errors.gallery.message}**</p>     )}
+                                        </div> 
+                                      
                                         <div className='mb-3 row'>
                                             {  
                                                 galleryOldImages && galleryOldImages.map((item,index ) => (

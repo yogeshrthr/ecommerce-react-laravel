@@ -49,7 +49,7 @@ class ProductController extends Controller
                     'status'=>'required|in:0,1',                
                     'price'=>'required|numeric',
                     'category_id'=>'required|integer',               
-                    // 'size_id'=>'required|integer',
+                    'size'=>'required|string',
                     // 'image'=>'required',
                     'sku'=>'required|string|unique:tbl_products,sku',
 
@@ -104,6 +104,11 @@ class ProductController extends Controller
 
                     ProductImage::create(['product_id'=>$product->id,'image'=>$imgeName]);
 
+                    
+                    if(!is_numeric($request->defaultImage) && $request->defaultImage==$tempImg->name){
+                        $product->image=$imgeName;
+                        $product->save();
+                    }
                     $tempImg->delete();
 
                 }
@@ -114,7 +119,27 @@ class ProductController extends Controller
                         $product->save();
                     }
                 }
-            }            
+            }   
+            if(isset($request->size) && count(explode(',',$request->size))){
+                $size=explode(',',$request->size);
+                $temp=[];
+                ProductSize::where('product_id',$product->id)->delete();
+                foreach($size as $item){
+                    array_push($temp,[
+                        'size_id' => $item,
+                        'product_id' => $product->id
+                    ]);
+                }
+                ProductSize::insert($temp);                
+            }   
+            // making defalut image here
+            if(is_numeric($request->defaultImage)){
+                $default_img=ProductImage::where(['product_id'=>$product->id])->find($request->defaultImage);
+                if(isset($default_img->image) && !empty($default_img->image)){
+                    $product->image=$default_img->image;
+                    $product->save();
+                }
+            }      
             DB::commit();
 
             return response()->json(['status'=>200,'message'=>"Product has Been Created Successfully!". (isset($indx)? $indx+1 ." files uploaded" :'') ],200);
@@ -137,12 +162,13 @@ class ProductController extends Controller
     }
     public function update(Request $request,$id){
         try{
+            DB::beginTransaction();
             $validate= Validator::make($request->all(),[
                 'title'=>'required|string',
                 'status'=>'required|in:0,1',                
                 'price'=>'required|numeric',
                 'category_id'=>'required|integer',               
-                // 'size_id'=>'required|integer',
+                'size'=>'required|string',
                 // 'image'=>'required',
                 'sku'=>'required|string|unique:tbl_products,sku,'.$request->id,
                 'description'=>'max:200',
@@ -209,16 +235,16 @@ class ProductController extends Controller
             }
 
            if(isset($request->size) && count(explode(',',$request->size))){
-            $size=explode(',',$request->size);
-            $temp=[];
-            ProductSize::where('product_id',$product->id)->delete();
-            foreach($size as $item){
-                array_push($temp,[
-                    'size_id' => $item,
-                    'product_id' => $product->id
-                ]);
-            }
-            ProductSize::insert($temp);                
+                $size=explode(',',$request->size);
+                $temp=[];
+                ProductSize::where('product_id',$product->id)->delete();
+                foreach($size as $item){
+                    array_push($temp,[
+                        'size_id' => $item,
+                        'product_id' => $product->id
+                    ]);
+                }
+                ProductSize::insert($temp);                
            }
 
             // deleteing old images
@@ -247,7 +273,7 @@ class ProductController extends Controller
                 }
             }
             
-
+            DB::commit();
             return response()->json(['status'=>200,'message'=>'Product has Been Updated Successfully!'],200);
             
         }catch (\Exception $e){
