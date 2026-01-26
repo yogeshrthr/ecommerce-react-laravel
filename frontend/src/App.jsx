@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
+import Login from './components/Login'
 import Shop from './components/Shop'
 import Product from './components/Product'
 import Cart from './components/Cart'
@@ -36,13 +37,14 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Layout>
-      <Shop />
-    </Layout>} />
+          <Route path="/shop" element={<Layout> <Shop /></Layout>} />    {/*  here wraped the shop page layout cause categy used same in to the sop page */}
           <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          
+          <Route path="/login" element={<Login />} />
+
 
           <Route path="/admin/dashboard" element={
             <AdminRequireAuth>

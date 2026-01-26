@@ -31,7 +31,7 @@ const Login = () => {
             body:JSON.stringify(data)
         }).then(res=>res.json())
         .then(result=>{
-            console.log(result)
+           //  console.log(result)
 
             if(result.status==200){
                 const adminInfo={

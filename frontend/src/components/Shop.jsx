@@ -46,7 +46,7 @@ const Shop = () => {
     //         },
     //     }).then(res=>res.json())
     //     .then(result=>{
-    //         console.log(result)
+    //        //  console.log(result)
             
     //         setCategory(result.data)
 
@@ -62,7 +62,7 @@ const Shop = () => {
             },
         }).then(res=>res.json())
         .then(result=>{
-            console.log(result)
+           //  console.log(result)
             setBrand(result.data)
 
         })
@@ -177,7 +177,6 @@ const Shop = () => {
                                                     checked={defaultCategory.includes(String(item.id))}
                                                     />
                                                     <label htmlFor="" value={item.id} className='ps-2'>{item.name}</label>
-                                                     {console.log(defaultCategory,item.id,defaultCategory.includes(item.id))}
                                                 </li>
                                                
                                             ))
@@ -372,11 +371,6 @@ const Shop = () => {
                     </div>
 
                 </div>
-
-
-
-
-
             {/* </Layout> */}
         </>
     )

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Front\ProductController as FrontProductController;
+use App\Http\Controllers\Front\AccountConroller;
 use App\Http\Controllers\Admin\TempImageController;
 
 
@@ -18,6 +19,8 @@ Route::get('get-category', [FrontProductController::class,'getCategory']);
 Route::get('get-brand', [FrontProductController::class,'getBrand']);
 Route::get('get-products', [FrontProductController::class,'getProducts']);
 Route::get('get-product-details/{id}', [FrontProductController::class,'getProductDetails']);
+Route::post('register', [AccountConroller::class,'register']);
+Route::post('login', [AccountConroller::class,'login']);
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();

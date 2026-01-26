@@ -26,12 +26,12 @@ const show = () => {
 
         }).then(res => res.json())
             .then(result => {
-                console.log(result)
+               //  console.log(result)
 
                 if (result.status == 200) {
                     setCategory(result.category);
                     //  toast.success(result.message)
-                    console.log(result)
+                   //  console.log(result)
                 } else {
                     toast.error(result.message)
                 }
@@ -69,13 +69,13 @@ const show = () => {
 
                     }).then(res => res.json())
                         .then(result => {
-                            console.log(result)
+                           //  console.log(result)
                             if (result.status == 200) {
                                 setCategory(prevCategories =>
                                     prevCategories.filter(category => category.id !== id)
                                 );
                                 toast.success(result.message)
-                                console.log(result)
+                               //  console.log(result)
                             } else {
                                 toast.error(result.message)
                             }

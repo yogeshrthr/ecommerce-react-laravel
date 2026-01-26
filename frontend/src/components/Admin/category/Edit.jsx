@@ -70,7 +70,7 @@ const edit = () => {
         }).then(res => res.json())
             .then(result => {
 
-                console.log(result)
+               //  console.log(result)
                 if (result.status == 200) {
                     toast.success(result.message)
                     navigate('/admin/category')

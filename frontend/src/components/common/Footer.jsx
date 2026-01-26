@@ -20,8 +20,8 @@ const Footer = ({category}) => {
                                 {
                                 category && category.map((item)=>(
 
-                                    <li>
-                                        <link rel="stylesheet" href={`/shop?category=${item.id}`} />
+                                    <li key={`category-footer-${item.id}`}>
+                                        <link rel="stylesheet"  href={`/shop?category=${item.id}`} />
                                         {item.name}
                                     </li>
                                     // <Nav.Link href={`/shop?category=${item.id}`}>{item.name}</Nav.Link>

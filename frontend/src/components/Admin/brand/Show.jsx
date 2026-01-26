@@ -26,12 +26,12 @@ const show = () => {
 
         }).then(res => res.json())
             .then(result => {
-                console.log(result)
+               //  console.log(result)
 
                 if (result.status == 200) {
                     fetchBrand(result.brand);
                     //  toast.success(result.message)
-                    console.log(result)
+                   //  console.log(result)
                 } else {
                     toast.error(result.message)
                 }
@@ -69,7 +69,7 @@ const show = () => {
 
                     }).then(res => res.json())
                         .then(result => {
-                            console.log(result)
+                           //  console.log(result)
                             if (result.status == 200) {
                                 fetchBrand(prevCategories =>
                                     prevCategories.filter(brand => brand.id !== id)

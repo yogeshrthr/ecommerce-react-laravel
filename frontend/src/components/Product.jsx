@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect,useContext } from 'react'
 import Layout from './common/Layout';
 import { Link, useParams} from 'react-router-dom';
 
@@ -9,9 +9,9 @@ import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 
-import ProductImgOne  from '../assets/images/mens/five.jpg';
-import ProductImgTwo  from '../assets/images/mens/six.jpg';
-import ProductImgThree  from '../assets/images/mens/eight.jpg';
+// import ProductImgOne  from '../assets/images/mens/five.jpg';
+// import ProductImgTwo  from '../assets/images/mens/six.jpg';
+// import ProductImgThree  from '../assets/images/mens/eight.jpg';
 
 
 import { Rating } from 'react-simple-star-rating'
@@ -22,7 +22,7 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { apiUrl } from './common/http';
 import { ToastContainer, toast } from 'react-toastify'; // ✅ Correct
-
+import { CartContext } from '../components/Context/AddToCart';
 
 const Product = () => {
     const product_id=useParams().id;
@@ -31,6 +31,8 @@ const Product = () => {
 
     const [product,setProduct]=useState([]);
 
+   const { AddToCart } = useContext(CartContext);
+    const [sizeSelect,setSizeSelect]=useState(null);
 
 
     const fetProductDetails=async()=>{
@@ -42,7 +44,7 @@ const Product = () => {
             }
         }).then(res=>res.json())
         .then(result=>{
-            console.log(result)
+            ////  console.log(result)
             if(result.status==200){
                 setProduct(result.data)
                 console.log(result.data.product_images)
@@ -56,7 +58,22 @@ const Product = () => {
     useEffect(()=>{
         fetProductDetails();
 
-    },[])
+    },[]);
+
+    const handleAddToCart=()=>{
+        if(product.product_size.length > 0){
+            if(sizeSelect==null){
+               toast.error("Please select a size");
+            }else{
+                AddToCart(product,sizeSelect);
+                toast.success('Item Added In Cart!')
+            }
+        }else{
+             AddToCart(product,sizeSelect);
+             toast.success('Item Added In Cart!')
+        }
+        
+    }
     return (
         <>
             <Layout>
@@ -238,11 +255,12 @@ const Product = () => {
                             <div className='pt-3'>
                                 <strong >Select Size</strong>
                                 <div className='sizes pt-3'>
-                                    {
-                                    
+                                    {                                    
                                         product.product_size && product.product_size.map((item,index)=>(
 
-                                            <button className=' btn btn-size' key={index}>{item.size[0].name} </button>
+                                            <button
+                                            onClick={()=>setSizeSelect(item.size[0].id)}
+                                            className={`btn btn-size ms-1 ${sizeSelect==item.size[0].id?'active':''}`}     key={index}>{item.size[0].name} </button>
                                         ))
                                     
                                     }
@@ -255,7 +273,9 @@ const Product = () => {
                             </div>
                             
                             <div className='add-to-cart py-4'>
-                                <button className='btn btn-primary text-uppercase'>Add To Cart</button>
+                                <button 
+                                onClick={()=>handleAddToCart()}
+                                 className='btn btn-primary text-uppercase'>Add To Cart</button>
                             </div>
 
                             <hr />

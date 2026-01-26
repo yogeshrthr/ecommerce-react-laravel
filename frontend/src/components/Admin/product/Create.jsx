@@ -71,7 +71,7 @@ const create = ({placeholder}) => {
         }).then(res=>res.json())
         .then(result=>{
             setCreate_disable(false)
-            // console.log(result)
+            ////  console.log(result)
             if(result.status==200){
                 toast.success(result.message)
                 navigate('/admin/product')
@@ -99,7 +99,7 @@ const create = ({placeholder}) => {
             },
         }).then(res=>res.json())
         .then(result=>{
-            // console.log(result)
+            ////  console.log(result)
             if(result.status==200){
                 setCategory(result.category);
                 // toast.success(result.message)
@@ -120,7 +120,7 @@ const create = ({placeholder}) => {
             },
         }).then(res=>res.json())
         .then(result=>{
-            // console.log(result)
+            ////  console.log(result)
             if(result.status==200){
                 setBrand(result.brand);
                 // toast.success(result.message)

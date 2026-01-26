@@ -90,7 +90,7 @@ const show = () => {
 
                     }).then(res => res.json())
                         .then(result => {
-                            console.log(result)
+                           //  console.log(result)
                             if (result.status == 200) {
                                 fetchProducts();
                                 toast.success(result.message)
