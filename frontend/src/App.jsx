@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
 import Login from './components/Login'
+import Register from './components/Register'
+import Account from './components/Account'
 import Shop from './components/Shop'
 import Product from './components/Product'
 import Cart from './components/Cart'
@@ -28,6 +30,7 @@ import Layout from './components/common/Layout';
 
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
+import { UserRequireAuth } from './components/UserRequireAuth'
 
 
 function App() {
@@ -44,6 +47,9 @@ function App() {
           <Route path="/admin/login" element={<AdminLogin />} />
           
           <Route path="/login" element={<Login />} />
+          <Route path="/Register" element={<Register />} />
+         
+          <Route path="/account/:id?" element={ <UserRequireAuth> <Account />  </UserRequireAuth>} />
 
 
           <Route path="/admin/dashboard" element={

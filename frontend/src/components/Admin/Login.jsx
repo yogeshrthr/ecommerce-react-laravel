@@ -94,7 +94,7 @@ const Login = () => {
                                         required:"The Password field is required"
                                     })
                                 }
-                                type="password" className={`form-control ${errors.email && 'is-invalid'}` } placeholder='Password' />
+                                type="password" className={`form-control ${errors.password && 'is-invalid'}` } placeholder='Password' />
 
                                 {
                                     errors.password && <p className='invalid-feedback'>{errors.password?.message}</p>

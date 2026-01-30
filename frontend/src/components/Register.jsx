@@ -5,11 +5,9 @@ import { useForm } from "react-hook-form"
 import { useNavigate } from 'react-router-dom';
 import Layout from './common/Layout';
 import {apiUrl} from './common/http'
-import { UserAuthContext } from './Context/UserAuth';
 import { toast } from 'react-toastify';
 
 const Login = () => {
-    const { login } =useContext(UserAuthContext)
  
      const navigate = useNavigate();
  
@@ -22,7 +20,7 @@ const Login = () => {
  
    const onSubmit= async (data)=>{
          console.log(data)
-         const res= await fetch(`${apiUrl}/login`,{
+         const res= await fetch(`${apiUrl}/register`,{
              method:'Post',
              headers: {
                  "content-type":'application/json'
@@ -33,16 +31,8 @@ const Login = () => {
             //  console.log(result)
  
              if(result.status==200){
-                 const userInfo={
-                     token:result.token,
-                     id:result.id,
-                     name:result.name
-                 }
-                 localStorage.setItem('userInfo',JSON.stringify(userInfo))    
-                 login(userInfo)
-                 toast.success(result.message)
- 
-                 navigate('/account')
+                 toast.success(result.message) 
+                 navigate('/login')
  
              }else{
                  toast.error(result.message)
@@ -58,7 +48,26 @@ const Login = () => {
                 <form action="" onSubmit={handleSubmit(onSubmit)}>
                     <div className='card shadow border-0 login' >
                         <div className='card-body p-4'>
-                            <h3>Login</h3>
+                            <h3>User Login</h3>
+                            <div className='mb-3'>
+                                <label htmlFor="" className='form-label'>Name</label>
+                                <input
+                                {
+                                    ...register('name',{
+                                        required:"The Name  field is required.",
+                                        pattern: {
+                                            value: /^[A-Z0-9._ -]+$/i,
+                                            message: "Invalid email address"
+                                        } 
+                                    })
+                                }
+                                
+                                type="text" className={`form-control ${errors.name && 'is-invalid'}` } placeholder='Name' />
+
+                                {
+                                    errors.name && <p className='invalid-feedback'>{errors.name?.message}</p>
+                                }
+                            </div>
                             <div className='mb-3'>
                                 <label htmlFor="" className='form-label'>Email</label>
                                 <input
