@@ -9,8 +9,12 @@ use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Front\ProductController as FrontProductController;
 use App\Http\Controllers\Front\AccountConroller;
+use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Admin\TempImageController;
 
+
+Route::post('register', [AccountConroller::class,'register']);
+Route::post('login', [AccountConroller::class,'login'])->name('login');
 
 route::post('admin/login',[AuthController::class,'authenticate']);  
 Route::get('get-new-arrived-products', [FrontProductController::class,'fetchNewArrivedProducts']);
@@ -19,8 +23,12 @@ Route::get('get-category', [FrontProductController::class,'getCategory']);
 Route::get('get-brand', [FrontProductController::class,'getBrand']);
 Route::get('get-products', [FrontProductController::class,'getProducts']);
 Route::get('get-product-details/{id}', [FrontProductController::class,'getProductDetails']);
-Route::post('register', [AccountConroller::class,'register']);
-Route::post('login', [AccountConroller::class,'login']);
+
+route::group(['middleware'=>'auth:sanctum'],function(){    
+    Route::post('save-order', [OrderController::class,'saveOrder']);
+});
+
+
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();

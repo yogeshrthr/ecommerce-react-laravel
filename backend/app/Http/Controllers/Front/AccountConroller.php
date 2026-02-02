@@ -41,6 +41,8 @@ class AccountConroller extends Controller
             return response()->json(['status'=>400,'errors'=>$validator->errors()
             ],400);
         }
+        // dd($request->all());
+        // dd(Auth::attempt(['email'=>$request->email,'password'=>$request->password]));
           if(Auth::attempt(['email'=>$request->email,'password'=>$request->password])){
             $user = User::find(Auth::user()->id);
 
