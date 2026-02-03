@@ -30,12 +30,16 @@ class OrderController extends Controller
             $order->save();
             
             foreach($request->cart as $item){
-                $orderItme=new OrderItem();
-                $orderItem->price=$item['qty']*$item['price'];
+                // dd($item,$item['qty']*$item['price']);
+
+                $orderItem = new OrderItem();
+                $orderItem->price = 100;
                 $orderItem->qty=$item['qty'];
-                $orderItem->price=$item['price'];
+                $orderItem->unit_price=$item['price'];
                 $orderItem->size=$item['size'];
                 $orderItem->product_id=$item['product_id'];
+                $orderItem->order_id=$order->id;
+                $orderItem->product_name=$item['product_name'];
                 $orderItem->save();
             }
 

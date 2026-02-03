@@ -106,17 +106,13 @@ const Cart = () => {
                                 <div>${grandTotal()??0}</div>
                         </div>
                         <div className='d-flex justify-content-end'>
-                            <button className='btn btn-primary'>Proceed To Checkout</button>
-                        </div>
-                        
+                            <Link to="/checkout"><button className='btn btn-primary'>Proceed To Checkout</button></Link>
+                        </div>                        
                     </div>
-
                 </div>
             </div>
-
         </Layout>
     )
 }
-
 export default Cart
 

@@ -43,13 +43,14 @@ function App() {
           <Route path="/shop" element={<Layout> <Shop /></Layout>} />    {/*  here wraped the shop page layout cause categy used same in to the sop page */}
           <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<CheckOut />} />
+          {/* <Route path="/checkout" element={<CheckOut />} /> */}
           <Route path="/admin/login" element={<AdminLogin />} />
           
           <Route path="/login" element={<Login />} />
           <Route path="/Register" element={<Register />} />
          
-          <Route path="/account/:id?" element={ <UserRequireAuth> <Account />  </UserRequireAuth>} />
+          <Route path="/account/: id?" element={ <UserRequireAuth> <Account />  </UserRequireAuth>} />
+          <Route path="/checkout" element={ <UserRequireAuth> <CheckOut /> </UserRequireAuth> } /> 
 
 
           <Route path="/admin/dashboard" element={
