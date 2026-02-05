@@ -59,4 +59,20 @@ class OrderController extends Controller
             return response()->json(['status'=>404,'message'=>'order found','data'=>[]],404);
         }
     }
+    public function updateStatus($orderId , Request $request){
+        $validator = Validator::make($request->all(),[
+            'id'=>'required|integer',
+            'status'=>'required|in:pending,delivered,cancelled,shipped',
+        ]);
+        if($validator->fails()){
+            return response()->json(['status'=>400,'message'=>'validation Failed','error'=>$validator->errrors()],400);
+        }
+        $order=Order::find($orderId);
+        if($order){
+            $order->status=$rquest->status;
+            return response()->json(['status'=>200,'message'=>'data Found!','data'=>$order]);
+        }else{
+            return response()->json(['status'=>404,'message'=>'data Found!','data'=>[]],404);
+        }
+    }
 }

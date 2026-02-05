@@ -46,6 +46,7 @@ Route::prefix('admin/')->middleware(['auth:sanctum','Role:admin'])->group(functi
     Route::post('save-temp-image', [TempImageController::class,'store']);
     Route::get('order-list',[AdminOrderController::class,'getOrderList']);
     Route::get('order-detail/{id}',[AdminOrderController::class,'orderDetail']);
+    Route::post('update-status/{id}',[AdminOrderController::class,'orderDetail']);
 
 });
 
