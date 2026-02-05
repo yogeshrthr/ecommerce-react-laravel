@@ -48,6 +48,45 @@ const OrderDetail = () => {
             // console.log(err)
         })
     }
+
+    const handStatusChange=(e)=>{
+        console.log(e.target.value);
+        fetch(apiUrl+`update-status/${id}`,{
+            method:'POST',
+            headers:{
+                'Accept':"application/json",
+                'Content-Type':"application/json",
+                'Authorization':`Bearer ${adminToken()}`
+            },
+            data:{'status':e.target.value}
+        }).then(res=>{
+            return res.json().then(errrData=>{
+                const error=Error(errData.messsage|| 'unexpected error');
+                error.status=errData.status;
+                error.error=errData.error;
+                throw error;
+            })
+            return errrData;
+        }).then(result=>{
+            toast.success(result.message||'Success')
+       }).catch(err=>{
+            if(err.status==403){
+                toast.error(err.message ||"Request Denied!")
+            }else if(err.status==404){
+                toast.error(err.message ||"Not found!")
+            }else if(err.status==401){
+                toast.error(err.message ||"Un-authenticate!")
+            }else if(err.status==400){
+                console.log(err.error)
+                toast.error(err.message ||"Un-authenticate!")
+            }else{
+                 toast.error(err.message ||"Somethign went wrong!")
+            }
+            // console.log(err)
+        })
+
+
+    }
     useEffect(()=>{
      fetchOrderDetails();
         
@@ -168,8 +207,8 @@ const OrderDetail = () => {
                     <div className='card shadow mb-5 p-4'>
                         <div className='mb-3'>
                             <label htmlFor="" className='form-label'>Status</label>
-                            <select name="" className='form-select ' id="">
-                                <option value="pending">Select</option>
+                            <select onChange={handStatusChange} name="" className='form-select ' id="">
+                                <option value="">Select</option>
                                 <option value="pending">Pending</option>
                                 <option value="shipped">Shipped</option>
                                 <option value="success">Success</option>
@@ -191,9 +230,6 @@ const OrderDetail = () => {
             </div>
 
         </div>
-
-
-
     </Layout>
     </>
   )
