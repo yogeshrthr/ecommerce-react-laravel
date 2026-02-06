@@ -31,6 +31,7 @@ import Layout from './components/common/Layout';
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 import { UserRequireAuth } from './components/UserRequireAuth'
+import OrderConfirmation from './components/OrderConfirmation'
 
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
          
           <Route path="/account/: id?" element={ <UserRequireAuth> <Account />  </UserRequireAuth>} />
           <Route path="/checkout" element={ <UserRequireAuth> <CheckOut /> </UserRequireAuth> } /> 
+          <Route path="/order-confirmation/:id" element={ <UserRequireAuth> <OrderConfirmation /> </UserRequireAuth> } /> 
 
 
           <Route path="/admin/dashboard" element={

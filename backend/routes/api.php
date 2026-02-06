@@ -26,6 +26,7 @@ Route::get('get-product-details/{id}', [FrontProductController::class,'getProduc
 
 route::group(['middleware'=>'auth:sanctum'],function(){    
     Route::post('save-order', [OrderController::class,'saveOrder']);
+    Route::get('order-confirmation/{oderId}',[OrderController::class,'orderConfirm']);
 });
 
 

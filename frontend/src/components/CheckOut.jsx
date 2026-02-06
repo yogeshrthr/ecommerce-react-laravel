@@ -1,13 +1,18 @@
 import React,{useContext, useEffect} from 'react'
 import Layout from './common/Layout'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, redirect, useNavigate } from 'react-router-dom';
 import ProductImg from '../assets/images/mens/six.jpg';
 import  { useState } from 'react'
 import { CartContext } from './Context/AddToCart';
 import { useForm } from 'react-hook-form';
 import { apiUrl, userToken } from './common/http';
+import { Swal } from 'sweetalert2/dist/sweetalert2';
+import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 
 const CheckOut = () => {
+    
+    const { id } = useParams(); // get the id from URL
 
     const {  cartData,shippingCharge, subTotal,grandTotal } =useContext(CartContext)
 
@@ -43,25 +48,54 @@ const CheckOut = () => {
         // 3️⃣ Append all original fields
          // Append normal fields
             Object.entries(data).forEach(([key, value]) => {
-                submissionData.append(key, value);
+                console.log(value)
+                if (typeof value === "object") {
+                    submissionData.append(key, JSON.stringify(value));
+                } else {
+                    submissionData.append(key, value);
+                }
             });
 
             // Append cart as JSON string
+            submissionData.append("shipping",shippingCharge());
+            submissionData.append("sub_total",subTotal());
+            submissionData.append("grand_total",grandTotal());
             submissionData.append("cart", JSON.stringify(cartData));
-        console.log(submissionData,cartData,data)
-        fetch(apiUrl+`/save-order`,{
-            method:'POST',
-            headers:{
-                "Content-type":"json/Application",
-                "Accept":"json/Application",
-                'Authorization': `Bearer ${userToken()}`,
-            },
-           body: JSON.stringify(submissionData),
+            console.log(submissionData,cartData,data)
+            fetch(apiUrl+`/save-order`,{
+                method:'POST',
+                headers:{
+                    // "Content-type":"application/json",
+                    "Accept":"application/json",
+                    'Authorization': `Bearer ${userToken()}`,
+                },
+            body: (submissionData),
 
-        }).then(res => res.json()).then(result=>{
-             console.log(result)
-        
-        })
+            }).then(res => {
+                // Check if response is OK (status 200–299)
+                if (!res.ok) {
+                    // Create an error object with status and message
+                    return res.json().then(errData => {
+                        const error = new Error(errData.message || "Unknown error");
+                        error.status = res.status;
+                        error.errors = res.error;
+                        throw error; // This will go to .catch()
+                    });
+                }
+                return res.json(); // Successful response
+            })
+            .then(result => {
+               navigate('/order-confirmation'+id)
+            }).catch(err => {
+                //  400 / 401 / 422 / 500 land here
+                if (err.status === 400) {
+                     toast.error(err.message);
+                } else if (err.status === 500) {
+                    toast.error(err.message);
+                } else {
+                     toast.error(err.message || 'Unexpected error');
+                }
+            });
            
 
      }
