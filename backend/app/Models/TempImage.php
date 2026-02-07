@@ -12,10 +12,10 @@ class TempImage extends Model
     ];
     protected $appends=['image_url'];   
     public function getImageUrlAttribute(){
-    if($this->name==''){
-        return ;
+        if($this->name==''){
+            return ;
 
-    }
-    return asset('/uploads/temp/'.$this->name);
+        }
+        return asset('/uploads/temp/'.$this->name);
     }
 }

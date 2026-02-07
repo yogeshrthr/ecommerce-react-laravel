@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
+import Login from './components/Login'
+import Register from './components/Register'
+import Account from './components/Account'
 import Shop from './components/Shop'
 import Product from './components/Product'
 import Cart from './components/Cart'
@@ -22,10 +25,17 @@ import { default as CreateProduct } from "./components/Admin/product/Create";
 import { default as ShowProduct } from './components/Admin/product/Show';
 import { default as EditProduct } from './components/Admin/product/Edit';
 
+import {default as ShowOrder } from './components/Admin/order/Show';
+import {default as  OrderDetail} from './components/Admin/order/OrderDetail'
+
+
+import Layout from './components/common/Layout';
 
 
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
+import { UserRequireAuth } from './components/UserRequireAuth'
+import OrderConfirmation from './components/OrderConfirmation'
 
 
 function App() {
@@ -35,11 +45,19 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/product" element={<Product />} />
+          <Route path="/shop" element={<Layout> <Shop /></Layout>} />    {/*  here wraped the shop page layout cause categy used same in to the sop page */}
+          <Route path="/product/:id" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<CheckOut />} />
+          {/* <Route path="/checkout" element={<CheckOut />} /> */}
           <Route path="/admin/login" element={<AdminLogin />} />
+          
+          <Route path="/login" element={<Login />} />
+          <Route path="/Register" element={<Register />} />
+         
+          <Route path="/account/: id?" element={ <UserRequireAuth> <Account />  </UserRequireAuth>} />
+          <Route path="/checkout" element={ <UserRequireAuth> <CheckOut /> </UserRequireAuth> } /> 
+          <Route path="/order-confirmation/:id" element={ <UserRequireAuth> <OrderConfirmation /> </UserRequireAuth> } /> 
+
 
           <Route path="/admin/dashboard" element={
             <AdminRequireAuth>
@@ -113,6 +131,21 @@ function App() {
           } />
 
           {/* product */}
+
+          {/* Order */}
+          <Route path="/admin/orders" element={
+            <AdminRequireAuth>
+              <ShowOrder />
+            </AdminRequireAuth>
+
+          } />
+          <Route path="/admin/order-details/:id" element={
+            <AdminRequireAuth>
+              <OrderDetail />
+            </AdminRequireAuth>
+
+          } />
+          {/* End Orders */}
 
 
 

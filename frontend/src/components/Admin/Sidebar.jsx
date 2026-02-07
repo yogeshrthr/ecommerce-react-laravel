@@ -14,19 +14,19 @@ const Sidebar = () => {
                         </li>
                         <hr className="mb-2" />
                         <li>
-                            <Link className='link active' to="/admin/category">Categories</Link>                            
+                            <Link className='link ' to="/admin/category">Categories</Link>                            
                         </li>
                         <hr className="mb-2" />
                         <li>
-                            <Link className='link active' to="/admin/brand">Brands</Link>  
+                            <Link className='link ' to="/admin/brand">Brands</Link>  
                         </li>
                         <hr className="mb-2" />
                         <li>
-                            <Link className='link active' to="/admin/product">Products</Link>  
+                            <Link className='link ' to="/admin/product">Products</Link>  
                         </li>
                         <hr className="mb-2" />
                         <li>
-                            Orders
+                           <Link className='link '  to="/admin/orders">  Orders</Link>
                         </li>
                         <hr className="mb-2" />
                         <li>

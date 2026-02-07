@@ -1,7 +1,9 @@
 import React from 'react'
+import Nav from 'react-bootstrap/Nav';
 import LogoWhite from '../../assets/images/logo-white.png';
 
-const Footer = () => {
+const Footer = ({category}) => {
+
     return (
         <>
             <footer className='py-5 text-wite'>
@@ -15,7 +17,17 @@ const Footer = () => {
                         <div className='col-md-3 pb-4'>
                             <h2 className='mb-3'>Categories</h2>
                             <ul>
-                                <li>
+                                {
+                                category && category.map((item)=>(
+
+                                    <li key={`category-footer-${item.id}`}>
+                                        <link rel="stylesheet"  href={`/shop?category=${item.id}`} />
+                                        {item.name}
+                                    </li>
+                                    // <Nav.Link href={`/shop?category=${item.id}`}>{item.name}</Nav.Link>
+                                ))
+                            }
+                                {/* <li>
                                     <a href=''>Men</a>
                                 </li>
                                 <li>
@@ -23,7 +35,7 @@ const Footer = () => {
                                 </li>
                                 <li>
                                     <a href=''>Kids</a>
-                                </li>
+                                </li> */}
 
 
                             </ul>

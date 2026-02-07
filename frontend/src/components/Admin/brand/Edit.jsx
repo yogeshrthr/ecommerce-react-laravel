@@ -40,7 +40,7 @@ const edit = () => {
             });
             const result = await res.json();
 
-            console.log(result)
+           //  console.log(result)
             setLoader(false)
             if (result.status == 200) {
 
@@ -73,7 +73,7 @@ const edit = () => {
         }).then(res => res.json())
             .then(result => {
 
-                console.log(result)
+               //  console.log(result)
                 if (result.status == 200) {
                     toast.success(result.message)
                     navigate('/admin/brand')
@@ -119,7 +119,7 @@ const edit = () => {
                                                             message: "Name can't be exceed 20 charecters."
                                                         },
                                                         pattern: {
-                                                            value: /^[A-Za-z 0-9 -]+$/i,
+                                                            value: /^[A-Za-z 0-9 _'-]+$/i,
                                                             message: "Name can be AlphaNumeric only."
                                                         }
 
