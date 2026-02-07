@@ -241,7 +241,14 @@ footer{
         } 
         }
     }
- }
+}
+
+.link {   
+    &:hover{
+        color: $primary-color;
+        cursor: pointer;
+    }
+}
 
 
 

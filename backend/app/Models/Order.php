@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-// use App\Models\Order;
+// use App\Models\Order;;
 use App\Models\OrderItem;
+use Illuminate\Database\Eloquent\Cast\Attribute;
 
 class Order extends Model
 {
@@ -51,6 +52,10 @@ class Order extends Model
         }
         return $address;
         
+    }
+
+    public function name():Attribute{
+        return Attribute::get(fn ($value) => ucWords($value));
     }
 
 }

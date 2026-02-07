@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Front\ProductController as FrontProductController;
 use App\Http\Controllers\Front\AccountConroller;
 use App\Http\Controllers\Front\OrderController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\TempImageController;
 
 
@@ -24,7 +25,7 @@ Route::get('get-brand', [FrontProductController::class,'getBrand']);
 Route::get('get-products', [FrontProductController::class,'getProducts']);
 Route::get('get-product-details/{id}', [FrontProductController::class,'getProductDetails']);
 
-route::group(['middleware'=>'auth:sanctum'],function(){    
+route::group(['middleware'=>['auth:sanctum','Role:customer']],function(){    
     Route::post('save-order', [OrderController::class,'saveOrder']);
     Route::get('order-confirmation/{oderId}',[OrderController::class,'orderConfirm']);
 });
@@ -35,7 +36,7 @@ route::group(['middleware'=>'auth:sanctum'],function(){
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::prefix('admin/')->middleware('auth:sanctum')->group(function () {
+Route::prefix('admin/')->middleware(['auth:sanctum','Role:admin'])->group(function () {
     Route::resource('category', CategoryController::class);
     Route::resource('brand', BrandController::class);
     Route::get('sizes', [SizeController::class,'index']);
@@ -43,6 +44,8 @@ Route::prefix('admin/')->middleware('auth:sanctum')->group(function () {
     Route::resource('product', ProductController::class);
     Route::post('update-product/{id}', [ProductController::class,'update']);
     Route::post('save-temp-image', [TempImageController::class,'store']);
+    Route::get('order-list',[AdminOrderController::class,'getOrderList']);
+    Route::get('order-detail/{id}',[AdminOrderController::class,'orderDetail']);
 
 });
 

@@ -25,6 +25,10 @@ import { default as CreateProduct } from "./components/Admin/product/Create";
 import { default as ShowProduct } from './components/Admin/product/Show';
 import { default as EditProduct } from './components/Admin/product/Edit';
 
+import {default as ShowOrder } from './components/Admin/order/Show';
+import {default as  OrderDetail} from './components/Admin/order/OrderDetail'
+
+
 import Layout from './components/common/Layout';
 
 
@@ -127,6 +131,21 @@ function App() {
           } />
 
           {/* product */}
+
+          {/* Order */}
+          <Route path="/admin/orders" element={
+            <AdminRequireAuth>
+              <ShowOrder />
+            </AdminRequireAuth>
+
+          } />
+          <Route path="/admin/order-details/:id" element={
+            <AdminRequireAuth>
+              <OrderDetail />
+            </AdminRequireAuth>
+
+          } />
+          {/* End Orders */}
 
 
 

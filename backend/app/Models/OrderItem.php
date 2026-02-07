@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Product;
+use App\Models\Size;
 
 class OrderItem extends Model
 {
@@ -16,4 +18,10 @@ class OrderItem extends Model
         'product_id',
         'product_name'
     ];
+    public function product(){
+        return $this->belongsTo(Product::class,'product_id','id');
+    }
+    public function size(){
+       return $this->belongsTo(Size::class, 'size', 'id');
+    }
 }

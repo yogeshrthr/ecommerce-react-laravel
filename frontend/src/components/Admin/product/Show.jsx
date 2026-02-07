@@ -111,7 +111,6 @@ const show = () => {
     }
     return (
         <Layout>
-
             <div className='container'>
                 <div className='row py-5'>
                     <div className='d-flex justify-content-between mt-5 pb-3'>
