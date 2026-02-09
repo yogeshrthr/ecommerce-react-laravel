@@ -7,28 +7,28 @@ use Illuminate\Http\Request;
 use Validator,Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\ApiResponseTrait;
 
 
 class AccountConroller extends Controller
 {
+    use ApiResponseTrait;
+
     public function register(Request $request){
         $validate=Validator::make($request->all(),[
             'name'=>'required|string|max:255',
-            'email'=>'required|email',
+            'email'=>'required|email|unique:users,email',
             'password'=>'required|string',
-            // 'pincode'=>'required|min:6',
-            // 'address'=>'required|min:6',
-        ]);
-        if($validate->fails()){
-            return response()->json(['status'=>400,'errors'=>$validate->errors()]);
-        }
-        User::insert([
+            // 'pincode'=>'required|digits:6',
+        ])->validate();
+        User::create([
             'name'=>$request->name,
             'email'=>$request->email,
-            'password'=>Hash::make($request->password),
+            'password'=>$request->password,
             'role'=>"customer"
         ]);
-        return response()->json(['status'=>200,'message'=>'You are registerd succesfully! Click to login below given link.']);
+        return $this->success(null,'You are registerd succesfully! Click to login below given link.');
+       
 
     }
     public function login(Request $request){
@@ -65,19 +65,14 @@ class AccountConroller extends Controller
     }
     public function updateProfile(Request $request){
         try{
-            $validate=Validator::make($request->all(),[
-                'name'=>'required|string',
-                'address'=>'required|string',
-                'city'=>'required|string',
-                'state'=>'required|string',
-                'pincode'=>'required|integer|digits:6',
-                'mobile' => 'required|integer|digits:10|starts_with:6,7,8,9',
-                'email'=>'required|string|email'
-
-            ]);
-            if($validate->fails()){
-                return response()->json(['status'=>400,'message'=>'validation Error!','error'=>$validate->errors()],400);
-            }
+            Validator::make($request->all(),[
+                'name'=>'required|string:255',
+                'email'=>'required|email|string:80',
+                'mobile'=>'digits:10|starts_with:6,7,8,9',
+                'city'=>'string:255',
+                'state'=>'string:255',
+                'pincode'=>'digits:6',
+            ])->validate();
 
             $user=User::find($request->user()->id);
             $user->name=$request->name;
@@ -88,11 +83,25 @@ class AccountConroller extends Controller
             $user->email=$request->email;
             $user->pincode=$request->pincode;
             $user->save();
-            return response()->json(['status'=>200,'message'=>'Account Info Update Successfully!','data'=>[]]);
+            return $this->success(null,'Account Info Update Successfully!');
 
-        }catch(Exception $e){
-            return response()->json(['status'=>500,'message'=>'Internal Server Error!','error'=>$e->getMessage()],500);
+        }catch(\Exception $e){
+            return $this->internalError('Internal Server Error!',$e->getMessage());
+            // return response()->json(['status'=>500,'message'=>'Internal Server Error!','error'=>$e->getMessage()],500);
         }
 
+    }
+    public function fetchUserAccountInfo(Request $request){
+        try{
+            if(!$request->user()){
+               return $this->unauthorized();
+            }else{
+                return $this->success($request->user(),'Data found');
+            }
+
+        }catch(\Exception $e){
+            // return response()->json(['status'=>500,'message'=>'Internal Server Error!','error'=>$e->getMessage()],500);
+            return $this->internalError('',$e->getMessage());
+        }
     }
 }

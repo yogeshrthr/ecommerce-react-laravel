@@ -68,9 +68,9 @@ const OrderDetail = () => {
             return res.json().then(errrData=>{
                 if(!res.ok){
                     console.log(errrData)
-                     const error=Error(errrData.messsage|| 'unexpected error');
+                     const error=Error(errrData.message|| 'unexpected error');
                     error.status=errrData.status;
-                    error.error=errrData.error;
+                    error.error=errrData.errors;
                     throw error;
                 }
                return errrData;
@@ -85,7 +85,7 @@ const OrderDetail = () => {
                 toast.error(err.message ||"Not found!")
             }else if(err.status==401){
                 toast.error(err.message ||"Un-authenticate!")
-            }else if(err.status==400){
+            }else if(err.status==422){
                 let temp=''
                 Object.keys(err.error).forEach(key => {
                     err.error[key].forEach(message => {
@@ -121,7 +121,7 @@ const OrderDetail = () => {
             return res.json().then(errrData=>{
                 if(!res.ok){
                     console.log(errrData)
-                     const error=Error(errrData.messsage|| 'unexpected error');
+                     const error=Error(errrData.message|| 'unexpected error');
                     error.status=errrData.status;
                     error.error=errrData.error;
                     throw error;
@@ -138,7 +138,7 @@ const OrderDetail = () => {
                 toast.error(err.message ||"Not found!")
             }else if(err.status==401){
                 toast.error(err.message ||"Un-authenticate!")
-            }else if(err.status==400){
+            }else if(err.status==422){
                 let temp=''
                 Object.keys(err.error).forEach(key => {
                     err.error[key].forEach(message => {

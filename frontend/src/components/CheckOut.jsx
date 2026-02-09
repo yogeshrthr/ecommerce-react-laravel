@@ -77,7 +77,7 @@ const CheckOut = () => {
                     return res.json().then(errData => {
                         const error = new Error(errData.message || "Unknown error");
                         error.status = res.status;
-                        error.errors = res.error;
+                        error.errors = res.errors;
                         throw error; // This will go to .catch()
                     });
                 }
@@ -88,8 +88,18 @@ const CheckOut = () => {
                navigate('/order-confirmation/'+result.data.id)
             }).catch(err => {
                 //  400 / 401 / 422 / 500 land here
-                if (err.status === 400) {
-                     toast.error(err.message);
+                if (err.status === 422) {
+                     let temp=''
+                        Object.keys(err.error).forEach(key => {
+                            err.error[key].forEach(message => {
+                                temp += message + '<br/>';
+                            });
+                        });              
+                        Swal.fire({
+                            icon: "error",
+                            title: "Validation Error!",
+                            html: temp,
+                        });
                 } else if (err.status === 500) {
                     toast.error(err.message);
                 } else {

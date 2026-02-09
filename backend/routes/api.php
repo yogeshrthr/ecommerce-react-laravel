@@ -32,6 +32,7 @@ route::group(['middleware'=>['auth:sanctum','Role:customer']],function(){
     Route::get('get-order-details/{id}',[OrderController::class,'orderDetail']);
     // Route::get('get-user',[AccountConroller::class,'getUser']);
     Route::post('update-account-info',[AccountConroller::class,'updateProfile']);
+    Route::get('get-acount-details',[AccountConroller::class,'fetchUserAccountInfo']);
 });
 
 

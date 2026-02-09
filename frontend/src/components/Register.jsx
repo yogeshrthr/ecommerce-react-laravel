@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from './common/Layout';
 import {apiUrl} from './common/http'
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const Login = () => {
  
@@ -26,8 +27,17 @@ const Login = () => {
                  "content-type":'application/json'
              },
              body:JSON.stringify(data)
-         }).then(res=>res.json())
-         .then(result=>{
+         }).then(res=>{
+            return res.json().then(errData=>{
+                if(!res.ok){
+                    const error=Error(errData.message||"Unexpected Error!")
+                    error.status=errData.status
+                    error.error=errData.errors
+                    throw error;
+                }
+                return errData;
+            })
+        }).then(result=>{
             //  console.log(result)
  
              if(result.status==200){
@@ -37,6 +47,28 @@ const Login = () => {
              }else{
                  toast.error(result.message)
              }
+         }).catch(err=>{
+            if(err.status==403){
+                toast.error(err.message ||"Request Denied!")
+            }else if(err.status==404){
+                toast.error(err.message ||"Not found!")
+            }else if(err.status==401){
+                toast.error(err.message ||"Un-authenticate!")
+            }else if(err.status==422){
+                let temp=''
+                Object.keys(err.error).forEach(key => {
+                    err.error[key].forEach(message => {
+                        temp += message + '<br/>';
+                    });
+                });              
+                Swal.fire({
+                    icon: "error",
+                    title: "Validation Error!",
+                    html: temp,
+                });
+            }else{
+                toast.error(err.message ||"Somethign went wrong!")
+            }
          })
  
    }

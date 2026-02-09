@@ -31,12 +31,14 @@ const Account = () => {
             register,
             handleSubmit,
             watch,
+            reset,
             formState: { errors }
         } = useForm();
 
     const product_id=useParams().id;
     const [loader, setLoader] = useState(true)
     const [flag, setFlag] = useState(false);   
+    const [account, setAccount] = useState([]);   
 
     const handlAccountsubmit=(data)=>{
         setFlag(true)
@@ -52,9 +54,9 @@ const Account = () => {
         }).then(res=>{
             return res.json().then(errData=>{
                 if(!res.ok){
-                    const error=Error(errData.messsage||"Unexpected Error!")
+                    const error=Error(errData.message||"Unexpected Error!")
                     error.status=errData.status
-                    error.error=errData.error
+                    error.error=errData.errors
                     throw error;
                 }
                 return errData;
@@ -62,13 +64,13 @@ const Account = () => {
         }).then(result=>{
            toast.success(result.message)
         }).catch(err=>{
-             if(err.status==403){
+            if(err.status==403){
                 toast.error(err.message ||"Request Denied!")
             }else if(err.status==404){
                 toast.error(err.message ||"Not found!")
             }else if(err.status==401){
                 toast.error(err.message ||"Un-authenticate!")
-            }else if(err.status==400){
+            }else if(err.status==422){
                 let temp=''
                 Object.keys(err.error).forEach(key => {
                     err.error[key].forEach(message => {
@@ -86,10 +88,71 @@ const Account = () => {
         }).finally(()=>{
             setLoader(false)
             setFlag(false)
+            fetchAccountDetail();
         })
 
     }
-    const fetchDe
+    const fetchAccountDetail= async()=>{
+         setLoader(true)
+        await fetch(apiUrl+`/get-acount-details`,{
+            method:"GET",
+            headers:{
+                "Accept":"application/json",
+                "Content-Type":"application/json",
+                "Authorization":`Bearer ${userToken()}`
+            }
+        }).then(res=>{
+            return res.json().then(errData=>{
+                if(!res.ok){
+                    const error =Error(errData.message||'unexpected Error!')
+                    error.message=errData.message
+                    error.status=errData.status
+                    error.error=errData.errors
+                    throw error;
+                }
+                return errData;
+            })
+        }).then(result=>{
+            // setAccount(result.data)
+            reset({
+                    name: result.data.name || '',
+                    address: result.data.address||'' ,
+                    pincode: result.data.pincode||'' ,
+                    city: result.data.city||'' ,
+                    state: result.data.state||'' ,
+                    email: result.data.email||'' ,
+                    mobile: result.data.mobile||'' ,
+                })
+            // reset()
+        }).catch(err=>{
+              if(err.status==403){
+                toast.error(err.message ||"Request Denied!")
+            }else if(err.status==404){
+                toast.error(err.message ||"Not found!")
+            }else if(err.status==401){
+                toast.error(err.message ||"Un-authenticate!")
+            }else if(err.status==422){
+                let temp=''
+                Object.keys(err.error).forEach(key => {
+                    err.error[key].forEach(message => {
+                        temp += message + '<br/>';
+                    });
+                });              
+                Swal.fire({
+                    icon: "error",
+                    title: "Validation Error!",
+                    html: temp,
+                });
+            }else{
+                toast.error(err.message ||"Somethign went wrong!")
+            }   
+        }).finally(()=>{
+            setLoader(false)
+        })
+    }
+    useEffect(()=>{
+        fetchAccountDetail();
+    },[])
    
     return (
         <>
@@ -116,7 +179,7 @@ const Account = () => {
                                         <div className='row mb-2'>
                                             <div className='col-md-6'>                                       
                                                 <label htmlFor="exampleFormControlInput1" className="form-label">Name</label>
-                                                <input type="text" className={`form-control ${errors.state && "is-invalid"}`} id="Name" placeholder="Name" 
+                                                <input type="text" className={`form-control ${errors.name && "is-invalid"}`} id="Name" placeholder="Name" 
                                                 {...register('name',{
                                                             required:"Name is Required",
                                                             pattern:{
@@ -163,7 +226,7 @@ const Account = () => {
                                             
                                             <div className='col-md-6'>                                       
                                                 <label htmlFor="Mobile" className="form-label">Mobile</label>
-                                                <input type="number" className={`form-control ${errors.mobile && "is-invalid"}`} id="Mobile" min="0" placeholder="Mobile"
+                                                <input type="number" readOnly className={`form-control   ${errors.mobile && "is-invalid"}`} id="Mobile" min="0" placeholder="Mobile"
                                                 
                                                     {...register('mobile',{
                                                             required:"Mobile is Required",
