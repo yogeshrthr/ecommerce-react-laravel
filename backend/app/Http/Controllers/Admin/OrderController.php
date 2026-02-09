@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 use App\Models\Order;
 use App\Models\OrderItem;
+use Illuminate\Support\Facades\Validator;
 
 
 use App\Http\Controllers\Controller;
@@ -44,8 +45,7 @@ class OrderController extends Controller
         }
 
     }
-    public function orderDetail($orderId, Request $request){
-        // dd(auth()->user()->toArray());
+    public function orderDetail($orderId, Request $request){        
         $order=Order::with(['items.product'=>function($q){
             $q->select('id', 'image');
         },'items.size'=>function($q){
@@ -57,6 +57,48 @@ class OrderController extends Controller
             return response()->json(['status'=>200,'message'=>'order found','data'=>$order]);
         }else{
             return response()->json(['status'=>404,'message'=>'order found','data'=>[]],404);
+        }
+    }
+    public function updateOrderStatus($orderId , Request $request){
+        try{
+            $validator = Validator::make($request->all(),[
+                // 'id'=>'required|integer',
+                'status'=>'required|in:pending,delivered,cancelled,shipped',
+            ]);
+            if($validator->fails()){
+                return response()->json(['status'=>400,'message'=>'validation Failed','error'=>$validator->errors()],400);
+            }
+            $order=Order::find($orderId);
+            if($order){
+                $order->status=$request->status;
+                $order->save();
+                return response()->json(['status'=>200,'message'=>'Update Successfully!','data'=>$order]);
+            }else{
+                return response()->json(['status'=>404,'message'=>'data Found!','data'=>[]],404);
+            }
+        }catch(\Exception $e){
+            return response()->json(['status'=>500,'message'=>'Internal Server Error','error'=>$e->getMessage(),'data'=>[]],500);
+        }
+    }
+    public function updateOrderPaymentStatus($orderId , Request $request){
+        try{
+            $validator = Validator::make($request->all(),[
+                // 'id'=>'required|integer',
+                'status'=>'required|in:not_paid,paid',
+            ]);
+            if($validator->fails()){
+                return response()->json(['status'=>400,'message'=>'validation Failed','error'=>$validator->errors()],400);
+            }
+            $order=Order::find($orderId);
+            if($order){
+                $order->payment_status=$request->status;
+                $order->save();
+                return response()->json(['status'=>200,'message'=>'Update Successfully!','data'=>$order]);
+            }else{
+                return response()->json(['status'=>404,'message'=>'data Found!','data'=>[]],404);
+            }
+        }catch(\Exception $e){
+            return response()->json(['status'=>500,'message'=>'Internal Server Error','error'=>$e->getMessage(),'data'=>[]],500);
         }
     }
 }

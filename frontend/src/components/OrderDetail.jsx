@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import Layout from '../../common/Layout'
-import Sidebar from '../Sidebar'
-import { adminToken, apiUrl, userToken } from '../../common/http'
+import Layout from './common/Layout'
+import Sidebar from './Sidebar'
+import {  apiUrl, userToken } from './common/http'
 import { useParams,Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2';
-import Loader from '../../common/Loader'
+import Loader from './common/Loader'
 const OrderDetail = () => {
     const {id} = useParams();
     const [orderDetails , setOrderDetails]=useState([]);
@@ -20,12 +20,12 @@ const OrderDetail = () => {
 
     const fetchOrderDetails= async()=>{
         setLoader(true)
-        await fetch(apiUrl+`/admin/order-detail/${id}`,{
+        await fetch(apiUrl+`/get-order-details/${id}`,{
             method:'GET',
             headers:{
                 'Accept':'application/json',
                 'Content-Type':'application/json',
-                "Authorization":`Bearer ${adminToken()}`
+                "Authorization":`Bearer ${userToken()}`
             },
         }).then(res=>{
             return res.json().then(errData=>{
@@ -54,113 +54,7 @@ const OrderDetail = () => {
         })
     }
 
-    const handStatusChange=(e)=>{
-        setLoader(true)
-        fetch(apiUrl+`/admin/update-order-status/${id}`,{
-            method:'POST',
-            headers:{
-                'Accept':"application/json",
-                'Content-Type':"application/json",
-                'Authorization':`Bearer ${adminToken()}`
-            },
-            body:JSON.stringify({'status':e.target.value})
-        }).then(res=>{
-            return res.json().then(errrData=>{
-                if(!res.ok){
-                    console.log(errrData)
-                     const error=Error(errrData.messsage|| 'unexpected error');
-                    error.status=errrData.status;
-                    error.error=errrData.error;
-                    throw error;
-                }
-               return errrData;
-            })
-            
-        }).then(result=>{
-            toast.success(result.message||'Success')
-       }).catch(err=>{
-            if(err.status==403){
-                toast.error(err.message ||"Request Denied!")
-            }else if(err.status==404){
-                toast.error(err.message ||"Not found!")
-            }else if(err.status==401){
-                toast.error(err.message ||"Un-authenticate!")
-            }else if(err.status==400){
-                let temp=''
-                Object.keys(err.error).forEach(key => {
-                    err.error[key].forEach(message => {
-                       temp += message + '\n';
-                    });
-                });                
-                Swal.fire({
-                    icon: "error",
-                    title: "Validation Error!",
-                    text: temp,
-                });
-            }else{
-                 toast.error(err.message ||"Somethign went wrong!")
-            }
-        }).finally(()=>{
-            setLoader(false)
-            fetchOrderDetails()
-        })
-
-
-    }
-    const handlePaymentStatusChange=(e)=>{
-        setLoader(true)
-        fetch(apiUrl+`/admin/update-order-payment-status/${id}`,{
-            method:'POST',
-            headers:{
-                'Accept':"application/json",
-                'Content-Type':"application/json",
-                'Authorization':`Bearer ${adminToken()}`
-            },
-            body:JSON.stringify({'status':e.target.value})
-        }).then(res=>{
-            return res.json().then(errrData=>{
-                if(!res.ok){
-                    console.log(errrData)
-                     const error=Error(errrData.messsage|| 'unexpected error');
-                    error.status=errrData.status;
-                    error.error=errrData.error;
-                    throw error;
-                }
-               return errrData;
-            })
-            
-        }).then(result=>{
-            toast.success(result.message||'Success')
-       }).catch(err=>{
-            if(err.status==403){
-                toast.error(err.message ||"Request Denied!")
-            }else if(err.status==404){
-                toast.error(err.message ||"Not found!")
-            }else if(err.status==401){
-                toast.error(err.message ||"Un-authenticate!")
-            }else if(err.status==400){
-                let temp=''
-                Object.keys(err.error).forEach(key => {
-                    err.error[key].forEach(message => {
-                       temp += message + '\n';
-                    });
-                });                
-                Swal.fire({
-                    icon: "error",
-                    title: "Validation Error!",
-                    text: temp,
-                });
-            }else{
-                 toast.error(err.message ||"Somethign went wrong!")
-            }
-        }).finally(()=>{
-            setLoader(false)
-            fetchOrderDetails();
-
-        })
-
-
-    }
+   
     useEffect(()=>{
      fetchOrderDetails();
         
@@ -170,14 +64,14 @@ const OrderDetail = () => {
     <Layout>
         <div className='container'>
             <div className='row py-5'>
-                <div className='h4 pb-0 mb-3'>
+                <div className='h4 pb-0 mb-0'>
                     Order Details
                 </div>
                 <div className='col-md-3'>
                     <Sidebar></Sidebar>
 
                 </div>
-                <div className='col-md-7 '>
+                <div className='col-md-9 '>
                     <div className='card shadow mb-5 .shadow p-4' style={{height:"800px" ,overflowY:"auto"}}>
                         {                        
                             loader?<Loader></Loader> :
@@ -283,31 +177,7 @@ const OrderDetail = () => {
                                 </>
                         }
                     </div>
-                </div>
-                <div className='col-md-2'>
-                    <div className='card shadow mb-5 p-4'>
-                        <div className='mb-3'>
-                            <label htmlFor="" className='form-label'>Status</label>
-                            <select onChange={handStatusChange} name="" className='form-select ' id="">
-                                <option value="">Select</option>
-                                <option value="pending">Pending</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="delivered">Delivered</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label htmlFor="" className='form-label'>Payment Status</label>
-                            <select name="" onChange={handlePaymentStatusChange} className='form-select ' id="">
-                                <option value="">Select</option>
-                                <option value="paid">Paid</option>
-                                <option value="not_paid">Not Paid</option>
-                            </select>
-
-                        </div>
-
-                    </div>
-                </div>
+                </div>                
             </div>
 
         </div>

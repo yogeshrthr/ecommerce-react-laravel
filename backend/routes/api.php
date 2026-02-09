@@ -27,7 +27,11 @@ Route::get('get-product-details/{id}', [FrontProductController::class,'getProduc
 
 route::group(['middleware'=>['auth:sanctum','Role:customer']],function(){    
     Route::post('save-order', [OrderController::class,'saveOrder']);
-    Route::get('order-confirmation/{oderId}',[OrderController::class,'orderConfirm']);
+    Route::get('order-confirmation/{oderId}',[OrderController::class,'orderConfirmationDetails']);
+    Route::get('get-order-list',[OrderController::class,'getOrderList']);
+    Route::get('get-order-details/{id}',[OrderController::class,'orderDetail']);
+    // Route::get('get-user',[AccountConroller::class,'getUser']);
+    Route::post('update-account-info',[AccountConroller::class,'updateProfile']);
 });
 
 
@@ -46,6 +50,9 @@ Route::prefix('admin/')->middleware(['auth:sanctum','Role:admin'])->group(functi
     Route::post('save-temp-image', [TempImageController::class,'store']);
     Route::get('order-list',[AdminOrderController::class,'getOrderList']);
     Route::get('order-detail/{id}',[AdminOrderController::class,'orderDetail']);
+    Route::post('update-order-status/{id}',[AdminOrderController::class,'updateOrderStatus']);
+    // Route::post('update-order-payment-status/{id}',[AdminOrderController::class,'updateOrderPaymentStatus']);
+    
 
 });
 

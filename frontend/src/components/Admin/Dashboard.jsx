@@ -24,35 +24,35 @@ const Dashboard = () => {
                     <div className='col-md-9'>
                         <div className='row py-5'>
                             <div className='col-md-4'>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h1 class="card-title">1</h1>
-                                        <h6 class="card-subtitle mb-2 text-body-secondary">Users</h6>
+                                <div className="card">
+                                    <div className="card-body">
+                                        <h1 className="card-title">1</h1>
+                                        <h6 className="card-subtitle mb-2 text-body-secondary">Users</h6>
                                     </div>
-                                    <div class="card-footer text-body-secondary">
+                                    <div className="card-footer text-body-secondary">
                                         View Users
                                     </div>
                                 </div>
                             </div>
 
                             <div className='col-md-4'>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h1 class="card-title">0</h1>
-                                        <h6 class="card-subtitle mb-2 text-body-secondary">Orders</h6>
+                                <div className="card">
+                                    <div className="card-body">
+                                        <h1 className="card-title">0</h1>
+                                        <h6 className="card-subtitle mb-2 text-body-secondary">Orders</h6>
                                     </div>
-                                    <div class="card-footer text-body-secondary">
+                                    <div className="card-footer text-body-secondary">
                                         View Orders
                                     </div>
                                 </div>
                             </div>
                             <div className='col-md-4'>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h1 class="card-title">1</h1>
-                                        <h6 class="card-subtitle mb-2 text-body-secondary">Products</h6>
+                                <div className="card">
+                                    <div className="card-body">
+                                        <h1 className="card-title">1</h1>
+                                        <h6 className="card-subtitle mb-2 text-body-secondary">Products</h6>
                                     </div>
-                                    <div class="card-footer text-body-secondary">
+                                    <div className="card-footer text-body-secondary">
                                         View Products
                                     </div>
                                 </div>
