@@ -12,6 +12,8 @@ use App\Http\Controllers\Front\AccountConroller;
 use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\TempImageController;
+use App\Http\Controllers\Admin\ShippingController;
+use App\Http\Controllers\Front\ShippingController as FrontShippingController ;
 
 
 Route::post('register', [AccountConroller::class,'register']);
@@ -24,6 +26,7 @@ Route::get('get-category', [FrontProductController::class,'getCategory']);
 Route::get('get-brand', [FrontProductController::class,'getBrand']);
 Route::get('get-products', [FrontProductController::class,'getProducts']);
 Route::get('get-product-details/{id}', [FrontProductController::class,'getProductDetails']);
+Route::get('get-shipp-charge', [FrontShippingController::class,'getShippingCharge']);
 
 route::group(['middleware'=>['auth:sanctum','Role:customer']],function(){    
     Route::post('save-order', [OrderController::class,'saveOrder']);
@@ -52,7 +55,9 @@ Route::prefix('admin/')->middleware(['auth:sanctum','Role:admin'])->group(functi
     Route::get('order-list',[AdminOrderController::class,'getOrderList']);
     Route::get('order-detail/{id}',[AdminOrderController::class,'orderDetail']);
     Route::post('update-order-status/{id}',[AdminOrderController::class,'updateOrderStatus']);
-    // Route::post('update-order-payment-status/{id}',[AdminOrderController::class,'updateOrderPaymentStatus']);
+    Route::post('update-order-payment-status/{id}',[AdminOrderController::class,'updateOrderPaymentStatus']);
+    Route::get('get-shipping-charge',[ShippingController::class,'getShippingCharge']);
+    Route::post('update-shipping-charge',[ShippingController::class,'updateshippingCarge']);
     
 
 });

@@ -7,6 +7,7 @@ import Layout from './common/Layout';
 import {apiUrl} from './common/http'
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
  
@@ -24,7 +25,8 @@ const Login = () => {
          const res= await fetch(`${apiUrl}/register`,{
              method:'Post',
              headers: {
-                 "content-type":'application/json'
+                 "Content-Type":'application/json',
+                 "Accept":'application/json'
              },
              body:JSON.stringify(data)
          }).then(res=>{
@@ -75,7 +77,7 @@ const Login = () => {
  
   return (
     <div>      
-        <Layout>           
+        <Layout>    
             <div className='container  d-flex justify-content-center py-5'>
                 <form action="" onSubmit={handleSubmit(onSubmit)}>
                     <div className='card shadow border-0 login' >
@@ -120,6 +122,25 @@ const Login = () => {
                                 }
                             </div>
                             <div className='mb-3'>
+                                <label htmlFor="" className='form-label'>Mobile</label>
+                                <input
+                                {
+                                    ...register('mobile',{
+                                        required:"The Mobile field is required",
+                                       pattern: {
+                                        value: /^[6-9][0-9]{9}$/,
+                                        message: "Enter Valid Mobile Number"
+                                        }                                       
+                                    })
+                                }
+                  
+                                type="number" className={`form-control ${errors.mobile && 'is-invalid'}` } placeholder='Mobile' />
+
+                                {
+                                    errors.mobile && <p className='invalid-feedback'>{errors.mobile?.message}</p>
+                                }
+                            </div>
+                            <div className='mb-3'>
                                 <label htmlFor="" className='form-label'>Password</label>
                                 <input
                                 {
@@ -134,6 +155,8 @@ const Login = () => {
                                 }
                             </div>
                             <button className='btn btn-secondary'>Login</button>
+                            <br/>
+                            <Link className='link' to={'/login'}><span>Already Register..?</span></Link>
                         </div>
 
 

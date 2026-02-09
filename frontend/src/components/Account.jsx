@@ -174,124 +174,127 @@ const Account = () => {
                        
                         <div className='col-md-9'>
                             <div className='card shadow p-3'>
-                                <form action="#" onSubmit={handleSubmit(handlAccountsubmit)}>
-                                    <div className="mb-3">
-                                        <div className='row mb-2'>
-                                            <div className='col-md-6'>                                       
-                                                <label htmlFor="exampleFormControlInput1" className="form-label">Name</label>
-                                                <input type="text" className={`form-control ${errors.name && "is-invalid"}`} id="Name" placeholder="Name" 
-                                                {...register('name',{
-                                                            required:"Name is Required",
-                                                            pattern:{
-                                                               value: /^[A-Za-z_ -]+$/,
-                                                                message:"Only alphabets and spaces are allowed."
-                                                            }
-                                                        })
-                                                    }
-                                                />
-                                                <span className='pt-2' style={{color:'red'}}>{errors.name? errors.name.message:''}</span>
-                                            </div>
-                                            
-                                            <div className='col-md-6'>                                       
-                                                <label htmlFor="Email" className="form-label">Email</label>
-                                                <input type="email" className={`form-control ${errors.email && "is-invalid"}`}  id="Email" placeholder="name@example.com"
-                                                {...register('email',{
-                                                            required:"Email is Required",
-                                                            pattern:{
-                                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                                                message: "Please enter a valid email address"
-                                                            }
-                                                        })
-                                                    }
-                                                />
-                                                <span className='pt-2' style={{color:'red'}}>{errors.email? errors.email.message:''}</span>
-                                            </div>
-                                        </div>                                    
-                                        <div className='row mb-2'>
-                                            <div className='col-md-6'>                                       
-                                                <label htmlFor="Pincode" className="form-label">Pincode</label>
-                                                <input type="text" className={`form-control ${errors.pincode && "is-invalid"}`}  id="Pincode" placeholder="Pincode"
-                                                {
-                                                    ...register('pincode',{
-                                                            required:"Pincode is Required",
-                                                            pattern:{
-                                                                value:/^[0-9]{6}$/,
-                                                                message:"Enter Vlaid Pincode Number."
-                                                            }
-                                                        })
-                                                    }
-                                                />
-                                                <span className='pt-2' style={{color:'red'}}>{errors.pincode? errors.pincode.message:''}</span>
-                                            </div>
-                                            
-                                            <div className='col-md-6'>                                       
-                                                <label htmlFor="Mobile" className="form-label">Mobile</label>
-                                                <input type="number" readOnly className={`form-control   ${errors.mobile && "is-invalid"}`} id="Mobile" min="0" placeholder="Mobile"
-                                                
-                                                    {...register('mobile',{
-                                                            required:"Mobile is Required",
-                                                            pattern:{
-                                                                value:/^[6-9][0-9]{9}$/,
-                                                                message:"Enter Vlaid Mobile Number."
-                                                            }
-                                                        })
-                                                    }
-                                                />
-                                                <span className='pt-2' style={{color:'red'}}>{errors.mobile? errors.mobile.message:''}</span>
-                                            </div>
-                                            
-                                        </div>   
-                                        <div className='row'>
-                                            <div className='col-md-6'>
-                                                <label htmlFor="city" className='form-lable'>City</label>
-                                                <input type="text" id='city' className={`form-control ${errors.city && "is-invalid"}`} 
-                                                {...register('city',{
-                                                            required:"City is Required",
-                                                            pattern:{
+                                {
+                                    loader? <Loader/> :
+                                    <form action="#" onSubmit={handleSubmit(handlAccountsubmit)}>
+                                        <div className="mb-3">
+                                            <div className='row mb-2'>
+                                                <div className='col-md-6'>                                       
+                                                    <label htmlFor="exampleFormControlInput1" className="form-label">Name</label>
+                                                    <input type="text" className={`form-control ${errors.name && "is-invalid"}`} id="Name" placeholder="Name" 
+                                                    {...register('name',{
+                                                                required:"Name is Required",
+                                                                pattern:{
                                                                 value: /^[A-Za-z_ -]+$/,
-                                                                message:"Only alphabets and spaces are allowed"
-                                                            }
-                                                        })
-                                                    }
-                                                />
-                                                <span className='pt-2' style={{color:'red'}}>{errors.city? errors.city.message:''}</span>
+                                                                    message:"Only alphabets and spaces are allowed."
+                                                                }
+                                                            })
+                                                        }
+                                                    />
+                                                    <span className='pt-2' style={{color:'red'}}>{errors.name? errors.name.message:''}</span>
+                                                </div>
+                                                
+                                                <div className='col-md-6'>                                       
+                                                    <label htmlFor="Email" className="form-label">Email</label>
+                                                    <input type="email" readOnly className={`form-control ${errors.email && "is-invalid"}`}  id="Email" placeholder="name@example.com"
+                                                    {...register('email',{
+                                                                required:"Email is Required",
+                                                                pattern:{
+                                                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                                    message: "Please enter a valid email address"
+                                                                }
+                                                            })
+                                                        }
+                                                    />
+                                                    <span className='pt-2' style={{color:'red'}}>{errors.email? errors.email.message:''}</span>
+                                                </div>
+                                            </div>                                    
+                                            <div className='row mb-2'>
+                                                <div className='col-md-6'>                                       
+                                                    <label htmlFor="Pincode" className="form-label">Pincode</label>
+                                                    <input type="text" className={`form-control ${errors.pincode && "is-invalid"}`}  id="Pincode" placeholder="Pincode"
+                                                    {
+                                                        ...register('pincode',{
+                                                                required:"Pincode is Required",
+                                                                pattern:{
+                                                                    value:/^[0-9]{6}$/,
+                                                                    message:"Enter Vlaid Pincode Number."
+                                                                }
+                                                            })
+                                                        }
+                                                    />
+                                                    <span className='pt-2' style={{color:'red'}}>{errors.pincode? errors.pincode.message:''}</span>
+                                                </div>
+                                                
+                                                <div className='col-md-6'>                                       
+                                                    <label htmlFor="Mobile" className="form-label">Mobile</label>
+                                                    <input type="number" readOnly className={`form-control   ${errors.mobile && "is-invalid"}`} id="Mobile" min="0" placeholder="Mobile"
+                                                    
+                                                        {...register('mobile',{
+                                                                required:"Mobile is Required",
+                                                                pattern:{
+                                                                    value:/^[6-9][0-9]{9}$/,
+                                                                    message:"Enter Vlaid Mobile Number."
+                                                                }
+                                                            })
+                                                        }
+                                                    />
+                                                    <span className='pt-2' style={{color:'red'}}>{errors.mobile? errors.mobile.message:''}</span>
+                                                </div>
+                                                
+                                            </div>   
+                                            <div className='row'>
+                                                <div className='col-md-6'>
+                                                    <label htmlFor="city" className='form-lable'>City</label>
+                                                    <input type="text" id='city' className={`form-control ${errors.city && "is-invalid"}`} 
+                                                    {...register('city',{
+                                                                required:"City is Required",
+                                                                pattern:{
+                                                                    value: /^[A-Za-z_ -]+$/,
+                                                                    message:"Only alphabets and spaces are allowed"
+                                                                }
+                                                            })
+                                                        }
+                                                    />
+                                                    <span className='pt-2' style={{color:'red'}}>{errors.city? errors.city.message:''}</span>
+                                                </div>
+                                                
+                                                <div className='col-md-6'>
+                                                    <label htmlFor="state" className='form-lable'>State</label>
+                                                    <input type="text" id="state" className={`form-control ${errors.state && "is-invalid"}`}   
+                                                        {...register('state',{
+                                                                required:"State is Required",
+                                                                pattern:{
+                                                                    value:/^[A-Za-z_ -]+$/,
+                                                                    message:"Only alphabets and spaces are allowed"
+                                                                }
+                                                            })
+                                                        }
+                                                    />
+                                                    <span className='pt-2' style={{color:'red'}}>{errors.state? errors.state.message:''}</span>
+                                                </div>
                                             </div>
-                                            
-                                            <div className='col-md-6'>
-                                                <label htmlFor="state" className='form-lable'>State</label>
-                                                <input type="text" id="state" className={`form-control ${errors.state && "is-invalid"}`}   
-                                                    {...register('state',{
-                                                            required:"State is Required",
-                                                            pattern:{
-                                                                value:/^[A-Za-z_ -]+$/,
-                                                                message:"Only alphabets and spaces are allowed"
-                                                            }
-                                                        })
-                                                    }
-                                                />
-                                                <span className='pt-2' style={{color:'red'}}>{errors.state? errors.state.message:''}</span>
-                                            </div>
-                                        </div>
-                                        <div className='row mb-2'>
-                                            <div className='col-md-12'>                                       
-                                             <label htmlFor="address" className={`form-label `}>Address</label>
-                                            <textarea className={`form-control ${errors.address && "is-invalid"}`} name=""  id="address"
-                                            {...register('address',{
-                                                    required:"Address is Required",
-                                                })
-                                            }
-                                            >
-                                            </textarea>
-                                            <span className='pt-2' style={{color:'red'}}>{errors.address? errors.address.message:''}</span>
-                                            </div>
+                                            <div className='row mb-2'>
+                                                <div className='col-md-12'>                                       
+                                                <label htmlFor="address" className={`form-label `}>Address</label>
+                                                <textarea className={`form-control ${errors.address && "is-invalid"}`} name=""  id="address"
+                                                {...register('address',{
+                                                        required:"Address is Required",
+                                                    })
+                                                }
+                                                >
+                                                </textarea>
+                                                <span className='pt-2' style={{color:'red'}}>{errors.address? errors.address.message:''}</span>
+                                                </div>
 
+                                                
+                                            </div>                                    
                                             
-                                        </div>                                    
+                                        </div>
+                                        <input  type="submit" className={`btn btn-primary ${flag?'disabled':''}`}  name="" id="" />
                                         
-                                    </div>
-                                    <input  type="submit" className={`btn btn-primary ${flag?'disabled':''}`}  name="" id="" />
-                                    
-                                </form>
+                                    </form>
+                                }
                             </div>
                         </div>
                        

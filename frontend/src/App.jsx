@@ -29,6 +29,7 @@ import { default as EditProduct } from './components/Admin/product/Edit';
 
 import {default as ShowOrder } from './components/Admin/order/Show';
 import {default as  OrderDetail} from './components/Admin/order/OrderDetail'
+import {default as  ShippingCharge} from './components/Admin/shipping/Edit'
 
 
 import Layout from './components/common/Layout';
@@ -150,6 +151,13 @@ function App() {
 
           } />
           {/* End Orders */}
+
+           <Route path="/admin/shipping-charge" element={
+            <AdminRequireAuth>
+              <ShippingCharge />
+            </AdminRequireAuth>
+
+          } />
 
 
 

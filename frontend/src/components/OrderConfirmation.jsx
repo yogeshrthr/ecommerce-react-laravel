@@ -68,7 +68,7 @@ const OrderConfirmation = () => {
                         </div>
                         <div className='col-md-12 mt-3 mb-5'>
                         <div className='card card-shadow  shadow'>
-                            <div className='ms-2 me-2 '>                     
+                            <div className='ms-2 me-2 p-2 '>                     
                                 <h3 className='mt-2'>  <strong>Order Summary</strong></h3>
                                 <hr />
                                 <div className='row'> 
@@ -101,7 +101,7 @@ const OrderConfirmation = () => {
                                             <strong>Contact:</strong> {orderDetails.mobile??'N/a'}
                                         </p>
                                     </div>
-                                    <div className='col-md-12 p-4 '>
+                                    <div className='col-md-12 p- '>
                                         <table className='p-5 table table-bordered border'  >
                                             <thead>
                                                 <tr>
@@ -184,7 +184,7 @@ const OrderConfirmation = () => {
                                     </div>
                                     <div className='d-flex justify-content-center p-2'>
                                         <div className='m-1'>
-                                            <button className='btn btn-primary' >View Order Details</button>
+                                            <Link to={'/account/order-list'}><button className='btn btn-primary' >View Order List</button></Link>
                                         </div>
                                         <div className='m-1'>
                                             <Link to={'/'}>

@@ -15,19 +15,28 @@ class AccountConroller extends Controller
     use ApiResponseTrait;
 
     public function register(Request $request){
-        $validate=Validator::make($request->all(),[
-            'name'=>'required|string|max:255',
-            'email'=>'required|email|unique:users,email',
-            'password'=>'required|string',
-            // 'pincode'=>'required|digits:6',
-        ])->validate();
-        User::create([
-            'name'=>$request->name,
-            'email'=>$request->email,
-            'password'=>$request->password,
-            'role'=>"customer"
-        ]);
-        return $this->success(null,'You are registerd succesfully! Click to login below given link.');
+        try
+        {
+
+        
+            $validate=Validator::make($request->all(),[
+                'name'=>'required|string|max:255',
+                'email'=>'required|email|unique:users,email',
+                'mobile'=>'required|digits:10|integer',
+                'password'=>'required|string',
+                // 'pincode'=>'required|digits:6',
+            ])->validate();
+            User::create([
+                'name'=>$request->name,
+                'email'=>$request->email,
+                'password'=>$request->password,
+                'mobile'=>$request->mobile,
+                'role'=>"customer"
+            ]);
+            return $this->success(null,'You are registerd succesfully! Click to login below given link.');
+        }catch(\Exception $e){
+            return $this->internalError($e->getMessage());
+        }
        
 
     }
@@ -79,8 +88,8 @@ class AccountConroller extends Controller
             $user->address=$request->address;
             $user->city=$request->city;
             $user->state=$request->state;
-            $user->mobile=$request->mobile;
-            $user->email=$request->email;
+            // $user->mobile=$request->mobile;
+            // $user->email=$request->email;
             $user->pincode=$request->pincode;
             $user->save();
             return $this->success(null,'Account Info Update Successfully!');
