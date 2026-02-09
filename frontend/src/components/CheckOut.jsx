@@ -8,11 +8,10 @@ import { useForm } from 'react-hook-form';
 import { apiUrl, userToken } from './common/http';
 import { Swal } from 'sweetalert2/dist/sweetalert2';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
 
 const CheckOut = () => {
     
-    const { id } = useParams(); // get the id from URL
+    
 
     const {  cartData,shippingCharge, subTotal,grandTotal } =useContext(CartContext)
 
@@ -85,7 +84,8 @@ const CheckOut = () => {
                 return res.json(); // Successful response
             })
             .then(result => {
-               navigate('/order-confirmation'+id)
+                localStorage.removeItem('cart')
+               navigate('/order-confirmation/'+result.data.id)
             }).catch(err => {
                 //  400 / 401 / 422 / 500 land here
                 if (err.status === 400) {

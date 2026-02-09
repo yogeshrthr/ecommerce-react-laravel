@@ -41,9 +41,7 @@ class AccountConroller extends Controller
             return response()->json(['status'=>400,'errors'=>$validator->errors()
             ],400);
         }
-        // dd($request->all());
-        // dd(Auth::attempt(['email'=>$request->email,'password'=>$request->password]));
-          if(Auth::attempt(['email'=>$request->email,'password'=>$request->password])){
+        if(Auth::attempt(['email'=>$request->email,'password'=>$request->password])){
             $user = User::find(Auth::user()->id);
 
             if($user->role=='customer'){
@@ -64,5 +62,37 @@ class AccountConroller extends Controller
         }else{
             return response()->json(['status'=>401,'message'=>"Either email/password is incorrect"],401);
         }
+    }
+    public function updateProfile(Request $request){
+        try{
+            $validate=Validator::make($request->all(),[
+                'name'=>'required|string',
+                'address'=>'required|string',
+                'city'=>'required|string',
+                'state'=>'required|string',
+                'pincode'=>'required|integer|digits:6',
+                'mobile' => 'required|integer|digits:10|starts_with:6,7,8,9',
+                'email'=>'required|string|email'
+
+            ]);
+            if($validate->fails()){
+                return response()->json(['status'=>400,'message'=>'validation Error!','error'=>$validate->errors()],400);
+            }
+
+            $user=User::find($request->user()->id);
+            $user->name=$request->name;
+            $user->address=$request->address;
+            $user->city=$request->city;
+            $user->state=$request->state;
+            $user->mobile=$request->mobile;
+            $user->email=$request->email;
+            $user->pincode=$request->pincode;
+            $user->save();
+            return response()->json(['status'=>200,'message'=>'Account Info Update Successfully!','data'=>[]]);
+
+        }catch(Exception $e){
+            return response()->json(['status'=>500,'message'=>'Internal Server Error!','error'=>$e->getMessage()],500);
+        }
+
     }
 }

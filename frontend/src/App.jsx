@@ -8,6 +8,8 @@ import Shop from './components/Shop'
 import Product from './components/Product'
 import Cart from './components/Cart'
 import CheckOut from './components/CheckOut'
+import Show from './components/Show'
+import {default as FrontOrderDetail} from './components/OrderDetail'
 import AdminLogin from './components/Admin/Login'
 import Dashboard from './components/Admin/Dashboard'
 import { ToastContainer, toast } from 'react-toastify';
@@ -57,6 +59,8 @@ function App() {
           <Route path="/account/: id?" element={ <UserRequireAuth> <Account />  </UserRequireAuth>} />
           <Route path="/checkout" element={ <UserRequireAuth> <CheckOut /> </UserRequireAuth> } /> 
           <Route path="/order-confirmation/:id" element={ <UserRequireAuth> <OrderConfirmation /> </UserRequireAuth> } /> 
+          <Route path="/account/order-list" element={ <UserRequireAuth> <Show/>  </UserRequireAuth> } /> 
+          <Route path="/account/order/details/:id" element={ <UserRequireAuth> <FrontOrderDetail/>  </UserRequireAuth> } /> 
 
 
           <Route path="/admin/dashboard" element={

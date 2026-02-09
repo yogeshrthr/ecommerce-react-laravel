@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import Layout from './common/Layout'
 import { apiUrl, userToken } from './common/http'
 import { useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams,Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import Loader from './common/Loader'
 const OrderConfirmation = () => {
+    const [loader,setLoader]=useState(true)
     const { id } = useParams(); // get the id from URL
     const [orderDetails,setOrderDetails]=useState([]);
     const getOrderDetails= async()=>{
@@ -35,6 +37,8 @@ const OrderConfirmation = () => {
             }else{
                 toast.error(err.message || 'Somethign Went wrong!')
             }
+        }).finally(()=>{
+            setLoader(false)
         })
     }
     let status_bdg='not_paid';
@@ -46,21 +50,23 @@ const OrderConfirmation = () => {
     <>
         <Layout>
 
-            <div className='container product-detail'>
-                    <div className='row  '>
-                         <div className='col-md-12 mt-3'>
+            <div className='container product-detail mt-4'>
+                {
+                    loader?<Loader></Loader>:
+                    <>
+                        <div className=' '>
+                            <div className='col-md-12 mt-3'>
                             <div className='text-center'>
-                             <h2 style={{color:"green"}}> 
+                                <h2 style={{color:"green"}}> 
                                 <strong>Thank You!</strong>
                             </h2>                           
                             Your order has been Successfully Placed.
                             </div>
-                          
+                            
 
-                         </div>
-
-                     </div>
-                     <div className='col-md-12 mt-3 mb-5'>
+                            </div>
+                        </div>
+                        <div className='col-md-12 mt-3 mb-5'>
                         <div className='card card-shadow  shadow'>
                             <div className='ms-2 me-2 '>                     
                                 <h3 className='mt-2'>  <strong>Order Summary</strong></h3>
@@ -74,7 +80,7 @@ const OrderConfirmation = () => {
                                             <strong>Date:</strong> {orderDetails.order_date??'N/A'}
                                         </p>
                                         <p>  {
-                                           status_bdg =orderDetails.paymet_status=='not_paid'?'warning':'success'
+                                            status_bdg =orderDetails.paymet_status=='not_paid'?'warning':'success'
                                             }                        
                                             <strong>Status:</strong> <span className={`badge bg-success ${status_bdg}`} >Paid</span> 
                                             {/* warning  */}
@@ -88,7 +94,7 @@ const OrderConfirmation = () => {
                                             <strong>Cusomer:</strong> {orderDetails.name??'N/A'}
                                         </p>
                                         <p>    
-                                                                      
+                                                                        
                                             <strong>Address:</strong> {orderDetails.full_address??'N/A'} 
                                         </p>
                                         <p>                               
@@ -122,14 +128,14 @@ const OrderConfirmation = () => {
                                                                     {dt.product_name??'N/a'}
                                                                 </td>
                                                                 <td>
-                                                                      {dt.qty??'0'}
+                                                                        {dt.qty??'0'}
                                                                 </td>
                                                                 <td>
-                                                                    {dt.unit_price??'0'}
+                                                                    ${dt.unit_price??'0'}
 
                                                                 </td>
                                                                 <td>
-                                                                     {dt.price??'0'}
+                                                                        ${dt.price??'0'}
 
                                                                 </td>
                                                             </tr>
@@ -147,7 +153,7 @@ const OrderConfirmation = () => {
 
                                                     </td>
                                                     <td >
-                                                        {orderDetails.sub_total??0}
+                                                        ${orderDetails.sub_total??0}
 
                                                     </td>
                                                 </tr>
@@ -158,7 +164,7 @@ const OrderConfirmation = () => {
 
                                                     </td>
                                                     <td >
-                                                        {orderDetails.shipping??0}
+                                                        ${orderDetails.shipping??0}
 
                                                     </td>
                                                 </tr>
@@ -169,7 +175,7 @@ const OrderConfirmation = () => {
 
                                                     </td>
                                                     <td >
-                                                        {orderDetails.grand_total??0}
+                                                        ${orderDetails.grand_total??0}
 
                                                     </td>
                                                 </tr>
@@ -181,13 +187,17 @@ const OrderConfirmation = () => {
                                             <button className='btn btn-primary' >View Order Details</button>
                                         </div>
                                         <div className='m-1'>
-                                            <button className='btn btn-outline-secondary' >Continue Shopping</button>
+                                            <Link to={'/'}>
+                                            <button className='btn btn-outline-secondary' >Continue Shopping</button></Link>
                                         </div>
                                     </div>
                                 </div>                               
                             </div>
                         </div>
-                     </div>
+                        </div>
+                    </>
+                }
+                    
 
                 </div>
         </Layout>

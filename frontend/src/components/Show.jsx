@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import Layout from '../../common/Layout'
-import Sidebar from '../Sidebar'
 import { Link, useParams } from 'react-router-dom'
-import { adminToken, apiUrl } from '../../common/http'
+import { apiUrl } from './common/http'
 import { toast } from 'react-toastify'
-import Loader from '../../common/Loader'
-import NoState from '../../common/NoState'
+import Layout from './common/Layout'
+import { userToken  } from './common/http'
+import Sidebar from './Sidebar'
+import Loader from './common/Loader'
+
 import Swal from 'sweetalert2'
 
 
 
-const show = () => {
+const Show = () => {
     const [order,setOrder]=useState([]);
     const [pagination,setPagination]=useState(null);
     const [searchTerm, setSearchTerm] = useState("");;
     const [StatusChangeValue, setStatusChangeValue] = useState("");
     const [PaymentStatusChangeValue, setPaymentStatusChangeValue] = useState("");
     const [perPage, setPerPage] = useState(10);
-    const [loader,setLoader]=useState(true)
+    const [loader, setLoader]=useState(true)
 
     const statsuConfg={
         pending:{color:'warning',text:'Pending'},
@@ -51,12 +52,12 @@ const show = () => {
 
     const fetchOrder= async (pageNumber = 1,search = searchTerm, limit = perPage,status=StatusChangeValue,payment_status=PaymentStatusChangeValue)=>{
         setLoader(true)
-         await fetch(apiUrl+`/admin/order-list?page=${pageNumber}&search=${search}&per_page=${limit}&status=${status}&payment_status=${payment_status}`, {
+         await fetch(apiUrl+`/get-order-list?page=${pageNumber}&search=${search}&per_page=${limit}&status=${status}&payment_status=${payment_status}`, {
             method:"GET",
             headers:{
                 'Accept':'application/json',
                 'Content-type':'application/json',
-                'Authorization':`Bearer ${adminToken()}`
+                'Authorization':`Bearer ${userToken()}`
             },
         }).then(res=>{
             return res.json().then(errData=>{
@@ -80,8 +81,8 @@ const show = () => {
             }else if(err.status==401){
                 toast.error(err.message ||"Un-authenticate!")
             }else{
-                toast.error(err.message ||"Somethign went wrong!")
-            }
+                    toast.error(err.message ||"Somethign went wrong!")
+                        }
         }).finally(()=>{
             setLoader(false)
         })
@@ -99,10 +100,10 @@ const show = () => {
                         {/* <Link to="/admin/product/create"><button className='btn btn-primary'>Create</button></Link> */}
                     </div>
                     <div className='col-md-3'>
-                        <Sidebar />
+                        <Sidebar/>
                     </div>
-                    <div className=' col-md-9'>
-                        <div className='card card-shardow p-4' style={{height:"700px",overflowY:'auto'}}>
+                    <div className=' col-md-9 ' >
+                        <div className='card card-shardow p-4' style={{height:"700px" ,overflowY: "auto" }}>
 
                              {/* filter */}
                                 {/* <div className='row'> */}
@@ -190,9 +191,9 @@ const show = () => {
                                        
                                     </div>
                                 {/* </div> */}
-                            {/* End filter */}
+                                {/* End filter */}
                             {
-                            loader?<Loader></Loader>  :                          
+                                loader?<Loader></Loader>:
                                 <>
                                     <table className='table'>
                                         <thead>
@@ -219,11 +220,11 @@ const show = () => {
                                         </thead>
                                         <tbody>
                                             {
-                                                order && order.map((dt)=>{                                            
+                                                order && order.map((dt,index)=>{                                            
                                                     return (
-                                                        <tr>
+                                                        <tr key={`order-items`+index}>
                                                             <td>                                            
-                                                                <Link className='link' to={`/admin/order-details/${dt.id}`}> #{dt.id} </Link>                                             
+                                                                <Link className='link' to={`/account/order/details/${dt.id}`}> #{dt.id} </Link>                                             
                                                             </td>
                                                             <td>
                                                                 {dt.name}
@@ -289,7 +290,7 @@ const show = () => {
                                         </nav>
                                     </div>
                                     {/* End paginate  */}
-                                </>
+                                 </>
                             }
 
                         </div>
@@ -300,4 +301,4 @@ const show = () => {
     )
 }
 
-export default show
+export default Show
