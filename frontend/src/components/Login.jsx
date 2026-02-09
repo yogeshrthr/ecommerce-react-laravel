@@ -7,6 +7,7 @@ import Layout from './common/Layout';
 import {apiUrl} from './common/http'
 import { UserAuthContext } from './Context/UserAuth';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
     const { login } =useContext(UserAuthContext)
@@ -93,6 +94,8 @@ const Login = () => {
                                 }
                             </div>
                             <button className='btn btn-secondary'>Login</button>
+                            <br/><br/>
+                            <Link  className='link' to={'/register'}><span>Signup</span></Link>                            
                         </div>
 
 

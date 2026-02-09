@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -33,6 +34,16 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+    // the attribute that shoud be only thse field will be visible
+    protected $visible = [
+        'name',
+        'mobile',
+        'email',
+        'address',
+        'city',
+        'state',
+        'pincode'
+    ];
 
     /**
      * Get the attributes that should be cast.
@@ -45,5 +56,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function setPasswordAttribute($value){
+        // Only hash if value is not empty
+        if ($value) {
+             $this->attributes['password'] = Hash::make($value);
+        }
     }
 }

@@ -6,14 +6,22 @@ import { useParams,Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2';
 import Loader from '../../common/Loader'
+import { useForm } from 'react-hook-form'
 const OrderDetail = () => {
+    const {
+             register,
+             handleSubmit,
+             watch,
+             reset,
+             formState: { errors },
+         } = useForm();
     const {id} = useParams();
     const [orderDetails , setOrderDetails]=useState([]);
     const [loader, setLoader]=useState(false)
 
     const statsuConfg={
         pending:{color:'warning',text:'Pending'},
-        success:{color:'success',text:'Deliverd'},
+        delivered:{color:'success',text:'Deliverd'},
         shipped:{color:'primary',text:'Shipped'},
         cancelled:{color:'danger',text:'Cancelled'},
     }
@@ -39,6 +47,10 @@ const OrderDetail = () => {
             })
         }).then(result=>{
             setOrderDetails(result.data);
+            reset({
+                payment_status:result.data.payment_status,
+                status:result.data.status
+            })
         }).catch(err=>{
             if(err.status==403){
                 toast.error(err.message ||"Request Denied!")
@@ -55,6 +67,10 @@ const OrderDetail = () => {
     }
 
     const handStatusChange=(e)=>{
+        if(e.target.value=='')
+            return false
+        if(e.target.value==orderDetails.status)
+            return false
         setLoader(true)
         fetch(apiUrl+`/admin/update-order-status/${id}`,{
             method:'POST',
@@ -68,9 +84,9 @@ const OrderDetail = () => {
             return res.json().then(errrData=>{
                 if(!res.ok){
                     console.log(errrData)
-                     const error=Error(errrData.messsage|| 'unexpected error');
+                     const error=Error(errrData.message|| 'unexpected error');
                     error.status=errrData.status;
-                    error.error=errrData.error;
+                    error.error=errrData.errors;
                     throw error;
                 }
                return errrData;
@@ -85,7 +101,7 @@ const OrderDetail = () => {
                 toast.error(err.message ||"Not found!")
             }else if(err.status==401){
                 toast.error(err.message ||"Un-authenticate!")
-            }else if(err.status==400){
+            }else if(err.status==422){
                 let temp=''
                 Object.keys(err.error).forEach(key => {
                     err.error[key].forEach(message => {
@@ -108,6 +124,12 @@ const OrderDetail = () => {
 
     }
     const handlePaymentStatusChange=(e)=>{
+        if(e.target.value=='')
+            return false
+        
+        if(orderDetails.payment_status== e.target.value){
+            return false
+        }
         setLoader(true)
         fetch(apiUrl+`/admin/update-order-payment-status/${id}`,{
             method:'POST',
@@ -121,7 +143,7 @@ const OrderDetail = () => {
             return res.json().then(errrData=>{
                 if(!res.ok){
                     console.log(errrData)
-                     const error=Error(errrData.messsage|| 'unexpected error');
+                     const error=Error(errrData.message|| 'unexpected error');
                     error.status=errrData.status;
                     error.error=errrData.error;
                     throw error;
@@ -138,7 +160,7 @@ const OrderDetail = () => {
                 toast.error(err.message ||"Not found!")
             }else if(err.status==401){
                 toast.error(err.message ||"Un-authenticate!")
-            }else if(err.status==400){
+            }else if(err.status==422){
                 let temp=''
                 Object.keys(err.error).forEach(key => {
                     err.error[key].forEach(message => {
@@ -161,6 +183,10 @@ const OrderDetail = () => {
 
 
     }
+    // const Status =watch('status')
+    // const statuslocked=['delivered','cancelled','returned'];
+    
+    // const paymentStatus =watch('payment_status')
     useEffect(()=>{
      fetchOrderDetails();
         
@@ -286,25 +312,43 @@ const OrderDetail = () => {
                 </div>
                 <div className='col-md-2'>
                     <div className='card shadow mb-5 p-4'>
-                        <div className='mb-3'>
-                            <label htmlFor="" className='form-label'>Status</label>
-                            <select onChange={handStatusChange} name="" className='form-select ' id="">
-                                <option value="">Select</option>
-                                <option value="pending">Pending</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="delivered">Delivered</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label htmlFor="" className='form-label'>Payment Status</label>
-                            <select name="" onChange={handlePaymentStatusChange} className='form-select ' id="">
-                                <option value="">Select</option>
-                                <option value="paid">Paid</option>
-                                <option value="not_paid">Not Paid</option>
-                            </select>
+                        <form>                       
+                       
+                            <div className='mb-3'>
+                                {/* disabled={statuslocked.includes(Status)} */}
+                                <label htmlFor="" className='form-label'>Status</label>
+                                <select  name=""  className='form-select ' id=""
+                                    {...register('status',{
+                                        onChange:(e)=>handStatusChange(e)
+                                    })
 
-                        </div>
+                                    }
+                                >
+                                    <option value="">Select</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="shipped">Shipped</option>
+                                    <option   value="delivered">Delivered</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div>
+                                {/* disabled={paymentStatus === "paid"} */}
+                                <label htmlFor="" className='form-label'>Payment Status</label>
+                                <select  name="" onChange={handlePaymentStatusChange} className='form-select ' id=""
+                                
+                                    {...register('payment_status',{
+                                            onChange:(e)=>handlePaymentStatusChange(e),
+                                        })
+
+                                    }
+                                >
+                                    <option value="">Select</option>
+                                    <option value="paid">Paid</option>
+                                    <option value="not_paid">Not Paid</option>
+                                </select>
+
+                            </div>
+                         </form>
 
                     </div>
                 </div>

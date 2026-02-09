@@ -7,7 +7,8 @@ import { CartContext } from './Context/AddToCart';
 import { toast } from 'react-toastify';
 
 const Cart = () => {
-    const { deleteCartItem,updateCartQuantity , cartData,shippingCharge, subTotal,grandTotal } =useContext(CartContext)
+    const { deleteCartItem,updateCartQuantity , cartData,shippingCharge, subTotal,grandTotal ,shippingLoader} =useContext(CartContext)
+    console.log(shippingCharge())
     const [qty,setQty]=useState({});
     const [refresh, setRefresh] = useState(false);
     
@@ -90,26 +91,36 @@ const Cart = () => {
 
                 </div>
 
-
-                <div className='row justify-content-end'>
-                    <div className='col-md-3'>
-                        <div className='d-flex justify-content-between border-bottom pb-2 mb-2'>
-                                <div><strong>Subtotal: </strong> </div>
-                                <div>${subTotal()??0}</div>
+                {
+                    cartData.length !== 0?
+                
+                    <div className='row justify-content-end'>
+                        <div className='col-md-3'>
+                            <div className='d-flex justify-content-between border-bottom pb-2 mb-2'>
+                                    <div><strong>Subtotal: </strong> </div>
+                                    <div>${subTotal()??0}</div>
+                            </div>
+                            <div className='d-flex justify-content-between border-bottom  py-2'>
+                                
+                                    <div> <strong>Shipping: </strong> </div>
+                                    <div className='text-end'>
+                                    {shippingLoader ? (
+                                        <span>Cal. shipping…</span>
+                                        ) : (
+                                            <span>${shippingCharge()}</span>
+                                        )}
+                                </div>
+                            </div>
+                            <div className='d-flex justify-content-between   py-2'>
+                                    <div><strong>Grand Total: </strong></div>
+                                    <div>${grandTotal()??0}</div>
+                            </div>
+                            <div className='d-flex justify-content-end'>
+                                <Link to={`${shippingLoader ?'':"/checkout"}`}><button className={`btn btn-primary `}>Proceed To Checkout</button></Link>
+                            </div>                        
                         </div>
-                         <div className='d-flex justify-content-between border-bottom  py-2'>
-                                <div> <strong>Shipping: </strong> </div>
-                                <div>${shippingCharge()??0}</div>
-                        </div>
-                         <div className='d-flex justify-content-between   py-2'>
-                                <div><strong>Grand Total: </strong></div>
-                                <div>${grandTotal()??0}</div>
-                        </div>
-                        <div className='d-flex justify-content-end'>
-                            <Link to="/checkout"><button className='btn btn-primary'>Proceed To Checkout</button></Link>
-                        </div>                        
-                    </div>
-                </div>
+                    </div>:''
+                }
             </div>
         </Layout>
     )
